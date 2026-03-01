@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intern Messages - AccelerateAI</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        .chat-container {
+            display: flex;
+            height: calc(100vh - 120px);
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #E5E7EB;
+        }
+
+        .contacts-list {
+            width: 300px;
+            border-right: 1px solid #E5E7EB;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #F9FAFB;
+        }
+
+        .contact-item {
+            padding: 16px;
+            border-bottom: 1px solid #F3F4F6;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .contact-item:hover {
+            background: #F3F4F6;
+        }
+
+        .contact-item.active {
+            background: #EFF6FF;
+            border-left: 4px solid var(--primary);
+        }
+
+        .chat-header {
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-input-area {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            gap: 12px;
+        }
+
+        .msg-time {
+            font-size: 10px;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body class="theme-mentor">
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+                <a href="dashboard.html#requests" class="nav-item" id="reqLink">📩 Requests <span id="reqCount"
+                        class="badge-pill"
+                        style="background: var(--accent); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto;">0</span></a>
+                <a href="messages.html" class="nav-item active">💬 Messaging</a>
+                <a href="wallet.html" class="nav-item">💰 Wallet</a>
+                <a href="#" class="nav-item">🚩 Report Misuse</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="avatarDisplay">M</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Mentor</div>
+                        <div class="user-role">Industry Expert</div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <div class="topbar">
+                <div class="topbar-title">Expert-Intern Technical Chat</div>
+            </div>
+
+            <div class="page-content">
+                <div class="chat-container">
+                    <div class="contacts-list" id="contactsList">
+                        <div style="padding:16px; font-weight:700; border-bottom: 1px solid #E5E7EB;">Assigned Interns
+                        </div>
+                        <!-- Filled by JS -->
+                    </div>
+                    <div class="chat-main">
+                        <div id="chatEmpty"
+                            style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#9CA3AF;">
+                            <div style="font-size:48px;">💬</div>
+                            <div>Select an intern to provide guidance</div>
+                        </div>
+                        <div id="chatActive" style="display:none; flex:1; flex-direction:column;">
+                            <div class="chat-header">
+                                <div id="activeAvatar"
+                                    style="width:32px;height:32px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;">
+                                    S</div>
+                                <div style="font-weight:700;" id="activeName">Intern Name</div>
+                            </div>
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <div class="chat-input-area">
+                                <input type="text" id="msgInput" class="form-control"
+                                    placeholder="Send feedback or resources..." style="flex:1;">
+                                <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                            </div>
+                            <div style="font-size:11px; color:#9CA3AF; padding: 0 16px 8px 16px;">📚 Focus on technical
+                                feedback and suggested improvements.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        let activePeerId = null;
+
+        async function init() {
+            const user = getUser();
+            if (!user || user.role !== 'mentor') { window.location.href = 'login.html'; return; }
+
+            try {
+                // Identity
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('avatarDisplay').textContent = (user.name || 'M')[0].toUpperCase();
+
+                const internData = await apiCall('/mentorship/interns');
+                renderContacts(internData.interns || []);
+
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('user_id')) {
+                    selectContact(params.get('user_id'), params.get('name') || 'Intern');
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        function renderContacts(list) {
+            const parent = document.getElementById('contactsList');
+            if (list.length === 0) {
+                parent.innerHTML += '<div style="padding:20px; font-size:13px; color:#9CA3AF;">No interns assigned yet. Accept requests from the Dashboard.</div>';
+                return;
+            }
+            list.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'contact-item';
+                div.innerHTML = `<strong>${item.name}</strong><br><small>${item.college}</small>`;
+                div.onclick = () => selectContact(item.student_id, item.name);
+                parent.appendChild(div);
+            });
+        }
+
+        async function selectContact(id, name) {
+            activePeerId = id;
+            document.getElementById('chatEmpty').style.display = 'none';
+            document.getElementById('chatActive').style.display = 'flex';
+            document.getElementById('activeName').textContent = name;
+            document.getElementById('activeAvatar').textContent = name[0];
+
+            loadMessages();
+            if (window.chatInterval) clearInterval(window.chatInterval);
+            window.chatInterval = setInterval(loadMessages, 5000);
+        }
+
+        async function loadMessages() {
+            if (!activePeerId) return;
+            try {
+                const data = await apiCall(`/messages/${activePeerId}`);
+                const container = document.getElementById('chatMessages');
+                const currentUser = getUser();
+
+                container.innerHTML = data.messages.map(m => `
+                <div class="message ${m.sender_id === currentUser.user_id ? 'sent' : 'received'}">
+                    ${m.content}
+                    <div class="msg-time">${new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+            `).join('');
+                container.scrollTop = container.scrollHeight;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('msgInput');
+            const content = input.value.trim();
+            if (!content || !activePeerId) return;
+
+            try {
+                await apiCall('/messages/', 'POST', { receiver_id: activePeerId, content });
+                input.value = '';
+                loadMessages();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

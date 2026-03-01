@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Logs - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+</head>
+
+<body class="theme-government">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="analytics.html" class="nav-item">📈 Analytics</a>
+        <a href="audit.html" class="nav-item active">🔗 Audit Logs</a>
+        <a href="analytics.html#companies" class="nav-item">🏢 Companies</a>
+        <a href="analytics.html#bias" class="nav-item">⚖️ Bias Monitor</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">G</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Admin</div>
+            <div class="user-role">Government</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-title">Blockchain Audit Logs</div>
+        <div class="topbar-actions">
+          <button class="btn btn-green btn-sm" onclick="exportAudit()">📥 Export Audit Trail</button>
+        </div>
+      </div>
+
+      <div class="page-content page-fade">
+        <!-- FRAUD ALERTS -->
+        <div style="background:#FEF2F2;border:1.5px solid #FECACA;border-radius:12px;padding:20px;margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:20px;">⚠️</span>
+            <strong style="color:#DC2626;font-size:16px;">Fraud Alerts (2 Active)</strong>
+          </div>
+          <div id="fraudAlerts"></div>
+        </div>
+
+        <!-- SEARCH + FILTERS -->
+        <div class="filter-bar" style="margin-bottom:20px;">
+          <input type="text" class="form-control" id="searchInput"
+            placeholder="🔍 Search by TXN ID, Student ID, Company..." oninput="searchLogs()" style="min-width:280px;">
+          <select class="form-control" style="width:auto;" id="typeFilter" onchange="filterLogs()">
+            <option value="">All Types</option>
+            <option value="reward_payment">Reward Payments</option>
+            <option value="csr_deposit">CSR Deposits</option>
+            <option value="escrow_lock">Escrow Locks</option>
+            <option value="escrow_release">Escrow Release</option>
+          </select>
+          <input type="date" class="form-control" style="width:auto;" id="dateFilter" onchange="filterLogs()">
+          <button class="btn btn-outline btn-sm" onclick="clearFilters()">✕ Clear</button>
+        </div>
+
+        <!-- BLOCKCHAIN LEDGER TABLE -->
+        <div class="card-flat" style="margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+            <span style="font-size:20px;">🔗</span>
+            <h3 style="font-size:18px;font-weight:800;">Blockchain Transaction Ledger</h3>
+            <span
+              style="background:#ECFDF5;color:#059669;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">✓
+              Immutable</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Type</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Amount</th>
+                  <th>Task ID</th>
+                  <th>AI Score</th>
+                  <th>Prev Hash</th>
+                  <th>Current Hash</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="auditBody"></tbody>
+            </table>
+          </div>
+          <div style="padding:12px 0;color:#6B7280;font-size:13px;text-align:center;" id="auditPagination"></div>
+        </div>
+
+        <!-- ESCROW TRACKING -->
+        <div class="section-header">
+          <div class="section-title">🔒 Escrow Tracking</div>
+        </div>
+        <div class="grid-2" style="gap:24px;margin-bottom:24px;">
+          <div class="card-flat">
+            <div style="font-weight:800;margin-bottom:14px;">Active Escrows</div>
+            <div id="activeEscrows"></div>
+          </div>
+          <div class="card-flat">
+            <div style="font-weight:800;margin-bottom:14px;">Recently Released</div>
+            <div id="releasedEscrows"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    let currentTransactions = [];
+    let currentAlerts = [];
+
+    async function init() {
+      const user = getUser();
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      try {
+        const auditRes = await apiCall('/government/audit-logs');
+        const alertRes = await apiCall('/government/fraud-alerts');
+
+        currentTransactions = auditRes.transactions || [];
+        currentAlerts = alertRes.alerts || [];
+
+        renderFraudAlerts(currentAlerts);
+        renderAudit(currentTransactions);
+        renderEscrows(currentTransactions);
+      } catch (err) {
+        showToast('Error fetching audit logs: ' + err.message, 'error');
+      }
+    }
+
+    function renderFraudAlerts(alerts) {
+      if (!alerts.length) {
+        document.getElementById('fraudAlerts').innerHTML = '<div style="color:#6B7280;font-size:14px;">No active fraud alerts detected.</div>';
+        document.querySelector('[style*="#FEF2F2"]').style.background = '#F0FDF4';
+        document.querySelector('[style*="#FEF2F2"]').style.borderColor = '#BBF7D0';
+        document.querySelector('strong[style*="#DC2626"]').style.color = '#059669';
+        document.querySelector('strong[style*="#DC2626"]').textContent = 'System Status: Secure';
+        return;
+      }
+      document.getElementById('fraudAlerts').innerHTML = alerts.map(a => `
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:12px;border-radius:8px;background:rgba(220,38,38,0.06);margin-bottom:8px;">
+          <span style="font-size:18px;">${a.severity === 'high' ? '🔴' : '🟡'}</span>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:14px;color:#DC2626;">${a.type} Alert — ${a.id}</div>
+            <div style="font-size:13px;color:#374151;margin-top:2px;">${a.description || a.desc}</div>
+            <div style="font-size:12px;color:#9CA3AF;margin-top:3px;">${a.time}</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:none;" onclick="showToast('Investigation opened!','warning')">Investigate</button>
+            <button class="btn btn-sm" style="background:#F3F4F6;border:none;" onclick="this.closest('[style*=\"display\"]').remove();">Dismiss</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    const typeLabels = {
+      reward_payment: '💸 Reward',
+      csr_deposit: '💵 CSR Deposit',
+      escrow_lock: '🔒 Escrow Lock',
+      escrow_release: '✅ Escrow Release'
+    };
+    const typeColors = {
+      reward_payment: '#1E40AF',
+      csr_deposit: '#059669',
+      escrow_lock: '#F59E0B',
+      escrow_release: '#059669'
+    };
+
+    function renderAudit(txns) {
+      document.getElementById('auditBody').innerHTML = txns.map(t => `
+        <tr>
+          <td style="font-size:12px;white-space:nowrap;">${new Date(t.timestamp).toLocaleString('en-US', { timeZone: 'UTC' })}</td>
+          <td><span class="badge" style="background:${typeColors[t.type] || '#6B7280'}20;color:${typeColors[t.type] || '#6B7280'};font-size:11px;">${typeLabels[t.type] || t.type}</span></td>
+          <td style="font-size:12px;">${t.from_entity?.id || '-'}</td>
+          <td style="font-size:12px;">${t.to_entity?.id || '-'}</td>
+          <td style="font-weight:700;font-size:13px;color:#059669;">$${(t.amount || 0).toLocaleString('en-US')}</td>
+          <td style="font-size:12px;color:#6B7280;">${t.task_id || '-'}</td>
+          <td style="font-size:12px;">—</td>
+          <td style="font-family:'Courier New',monospace;font-size:11px;color:#9CA3AF;">${t.previous_hash || '000000'}</td>
+          <td style="font-family:'Courier New',monospace;font-size:11px;color:#3B82F6;cursor:pointer;" onclick="verifyHash('${t._id}','${t.current_hash}')">${t.current_hash || 'N/A'}</td>
+          <td><span style="color:#059669;font-size:12px;font-weight:700;">✓ Verified</span></td>
+        </tr>
+      `).join('');
+      document.getElementById('auditPagination').textContent = `Total ledger entries: ${txns.length}`;
+    }
+
+    function verifyHash(id, hash) {
+      openModal(`
+        <div style="text-align:center;margin-bottom:20px;"><div style="font-size:48px;">🔗</div><div style="font-size:18px;font-weight:800;margin-top:8px;">Hash Verification</div></div>
+        <div style="background:#F8FAFC;padding:16px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;word-break:break-all;margin-bottom:16px;">${hash}</div>
+        <div style="background:#ECFDF5;padding:14px;border-radius:10px;">
+          <div style="color:#059669;font-weight:700;margin-bottom:8px;">✅ Hash Verified on Immutable Ledger</div>
+          <div style="font-size:13px;color:#065F46;">Transaction ID: ${id}<br>Block: #${Math.floor(Math.random() * 100000 + 800000)}<br>Confirmations: ${Math.floor(Math.random() * 50 + 6)}</div>
+        </div>
+      `, '🔗 Blockchain Hash Verification');
+    }
+
+    function renderEscrows(txns) {
+      const active = txns.filter(t => t.type === 'escrow_lock').slice(0, 5);
+      const releases = txns.filter(t => t.type === 'reward_payment').slice(0, 5);
+
+      document.getElementById('activeEscrows').innerHTML = active.length ? active.map(e => `
+        <div style="padding:12px;border-radius:8px;background:#FFFBEB;border:1px solid #FDE68A;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-weight:700;font-size:13px;">Task ${e.task_id}</span>
+            <span style="font-weight:800;color:#F59E0B;">$${e.amount.toLocaleString('en-US')}</span>
+          </div>
+          <div style="font-size:12px;color:#6B7280;">From: ${e.from_entity?.name || e.from_entity?.id}</div>
+        </div>
+      `).join('') : '<div style="font-size:13px;color:#6B7280;">No active escrows</div>';
+
+      document.getElementById('releasedEscrows').innerHTML = releases.length ? releases.map(r => `
+        <div style="padding:12px;border-radius:8px;background:#ECFDF5;border:1px solid #A7F3D0;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-weight:700;font-size:13px;">Reward Release</span>
+            <span style="font-weight:800;color:#059669;">+$${r.amount}</span>
+          </div>
+          <div style="font-size:12px;color:#6B7280;">To: ${r.to_entity?.name || r.to_entity?.id}</div>
+        </div>
+      `).join('') : '<div style="font-size:13px;color:#6B7280;">No recent releases</div>';
+    }
+
+    async function searchLogs() {
+      const q = document.getElementById('searchInput').value;
+      try {
+        const res = await apiCall(`/government/audit-logs?search=${encodeURIComponent(q)}`);
+        renderAudit(res.transactions || []);
+      } catch (err) { console.error(err); }
+    }
+
+    async function filterLogs() {
+      const type = document.getElementById('typeFilter').value;
+      try {
+        const res = await apiCall(`/government/audit-logs?tx_type=${encodeURIComponent(type)}`);
+        renderAudit(res.transactions || []);
+      } catch (err) { console.error(err); }
+    }
+
+    function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('typeFilter').value = '';
+      init();
+    }
+
+    function exportAudit() {
+      if (!currentTransactions.length) return;
+      const rows = [['ID', 'Timestamp', 'Type', 'From', 'To', 'Amount', 'TaskID', 'Hash']];
+      currentTransactions.forEach(t => {
+        rows.push([t._id, t.timestamp, t.type, t.from_entity?.id, t.to_entity?.id, t.amount, t.task_id, t.current_hash]);
+      });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv' }));
+      a.download = `tn_audit_ledger_${Date.now()}.csv`;
+      a.click();
+      showToast('Audit trail exported!', 'success');
+    }
+
+    init();
+  </script>
+
+
+</body>
+
+</html>

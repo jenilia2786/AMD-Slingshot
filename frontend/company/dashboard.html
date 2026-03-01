@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Dashboard - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="theme-company">
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item active">📊 Dashboard</a>
+        <a href="create-task.html" class="nav-item">➕ Create Task</a>
+        <a href="candidates.html" class="nav-item">👥 Candidates</a>
+        <a href="csr-wallet.html" class="nav-item">💰 Wallet</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">C</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Company</div>
+            <div class="user-role" id="userRole">Corporate</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-title">Company Dashboard</div>
+        <div class="topbar-actions">
+          <div class="role-badge">Company Portal</div>
+          <div class="wallet-badge" onclick="window.location.href='csr-wallet.html'">
+            <span class="wallet-icon">💼</span>
+            <span class="wallet-amount" id="csrBalance">$0</span>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="window.location.href='create-task.html'">Create Task</button>
+        </div>
+      </header>
+
+      <div class="page-content page-fade">
+        <div class="page-header" style="margin-bottom: 32px;">
+          <h1 style="font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">Welcome back, <span id="companyName"
+              style="color: var(--accent);">TechCorp</span>! 🏢</h1>
+          <p style="color: var(--text-secondary); margin-top: 4px; font-size: 16px;">Manage your tasks, candidates, and
+            CSR utilization.</p>
+        </div>
+
+        <!-- STATS -->
+        <div class="grid-4" style="margin-bottom: 32px;">
+          <div class="stat-card">
+            <div class="stat-label">Active Tasks</div>
+            <div class="stat-value" id="s1">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Hired Candidates</div>
+            <div class="stat-value" id="s2">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">CSR Available</div>
+            <div class="stat-value" id="s3">$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Reserved Escrow</div>
+            <div class="stat-value" id="s4">$0</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 32px; gap: 32px;">
+          <!-- ACTIVE TASKS -->
+          <div class="card">
+            <div class="section-header">
+              <h3 class="section-title">📋 Active Tasks</h3>
+              <a href="create-task.html" class="btn btn-primary btn-sm">Create New</a>
+            </div>
+            <div id="activeTasks" style="display: flex; flex-direction: column; gap: 16px;">
+              <!-- Dynamic Content -->
+            </div>
+          </div>
+
+          <!-- CHARTS + ACTIVITY -->
+          <div style="display: flex; flex-direction: column; gap: 32px;">
+            <div class="card">
+              <h3 class="section-title" style="margin-bottom: 20px;">📈 Submission Trend</h3>
+              <canvas id="submissionChart" height="200"></canvas>
+            </div>
+
+            <div class="card">
+              <h3 class="section-title" style="margin-bottom: 16px;">🔔 Recent Activity</h3>
+              <div id="activityFeed">
+                <!-- Dynamic Content -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRUST SCORE -->
+        <div class="card">
+          <h3 class="section-title" style="margin-bottom: 24px;">⭐ Company Trust Score</h3>
+          <div style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 48px; align-items: start;">
+            <div style="text-align: center; padding: 20px; background: var(--accent-tint); border-radius: 20px;">
+              <div style="font-size: 52px; font-weight: 800; color: var(--accent); font-family: 'Syne', sans-serif;">4.7
+              </div>
+              <div style="font-size: 24px; margin: -4px 0 8px;">⭐⭐⭐⭐⭐</div>
+              <div style="font-size: 13px; color: var(--text-secondary); font-weight: 600;">Overall Rating</div>
+            </div>
+
+            <div id="trustMetrics">
+              <!-- Dynamic Content -->
+            </div>
+
+            <div style="border-left: 1px solid var(--gray-mid); padding-left: 32px;">
+              <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 16px;">💬 Student Feedback</h4>
+              <div id="studentFeedback" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Dynamic Content -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    async function init() {
+      const user = getUser();
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      try {
+        const dashboardData = await apiCall('/company/dashboard');
+        const stats = dashboardData.stats || {};
+        const activeTasks = dashboardData.active_tasks || [];
+
+        document.getElementById('userName').textContent = user.name || 'Company';
+        document.getElementById('userAvatar').textContent = (user.name || 'C')[0].toUpperCase();
+        document.getElementById('userRole').textContent = dashboardData.company_type || 'Corporate';
+        document.getElementById('companyName').textContent = user.name.split(' ')[0];
+        document.getElementById('csrBalance').textContent = formatCurrency(stats.csr_balance || 0);
+
+        // Animate stats
+        setTimeout(() => {
+          animateCounter(document.getElementById('s1'), 0, stats.active_tasks || 0, 800);
+          animateCounter(document.getElementById('s2'), 0, stats.hired_candidates || 0, 1000);
+          document.getElementById('s3').textContent = formatCurrency(stats.csr_balance || 0);
+          document.getElementById('s4').textContent = formatCurrency(stats.reserved_amount || 0);
+        }, 300);
+
+        renderActiveTasks(activeTasks);
+      } catch (err) {
+        showToast('Error loading dashboard: ' + err.message, 'error');
+      }
+    }
+
+    function renderActiveTasks(tasks) {
+      if (!tasks || tasks.length === 0) {
+        document.getElementById('activeTasks').innerHTML = '<div style="color:#6B7280;font-size:14px;text-align:center;padding:20px;">No active tasks found</div>';
+        return;
+      }
+      document.getElementById('activeTasks').innerHTML = tasks.map(t => `
+        <div style="background:white;border:1px solid #E5E7EB;border-radius:10px;padding:16px;transition:all 0.2s;cursor:pointer;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='#E5E7EB'" onclick="window.location.href='candidates.html'">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+            <div style="font-size:15px;font-weight:700;">${t.title}</div>
+            <span class="badge badge-gold">$${t.reward_per_candidate}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:13px;color:#6B7280;margin-bottom:4px;">Submissions: ${t.submissions_count || 0}/${t.max_participants || 0}</div>
+              <div style="background:#E5E7EB;height:6px;border-radius:10px;width:160px;overflow:hidden;">
+                <div style="width:${((t.submissions_count || 0) / (t.max_participants || 1)) * 100}%;height:100%;background:${(t.submissions_count >= t.max_participants) ? '#DC2626' : '#059669'};border-radius:10px;"></div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:12px;color:#6B7280;">${daysLeft(t.deadline)}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderActivity(activities) {
+      if (!activities || activities.length === 0) {
+        document.getElementById('activityFeed').innerHTML = '<div style="color:#6B7280;font-size:14px;text-align:center;padding:10px;">No recent activity</div>';
+        return;
+      }
+      document.getElementById('activityFeed').innerHTML = activities.map(a => `
+        <div class="activity-item">
+          <div class="activity-dot" style="background:${a.color || '#7C3AED'};"></div>
+          <div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div>
+        </div>
+      `).join('');
+    }
+
+    function renderChart(trend) {
+      const ctx = document.getElementById('submissionChart').getContext('2d');
+      const accentColor = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#7C3AED';
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: trend.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [{
+            label: 'Submissions',
+            data: trend.data || [0, 0, 0, 0, 0, 0, 0],
+            borderColor: accentColor,
+            backgroundColor: accentColor + '1A', // 10% opacity
+            fill: true,
+            tension: 0.4,
+            borderWidth: 2,
+            pointRadius: 4,
+            pointBackgroundColor: accentColor,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { grid: { color: '#F3F4F6' } }, x: { grid: { display: false } } }
+        }
+      });
+    }
+
+    function renderTrustMetrics(score) {
+      const metrics = [
+        { name: 'Payment Reliability', pct: score >= 4.5 ? 98 : 85 },
+        { name: 'Hiring Transparency', pct: score >= 4.0 ? 92 : 75 },
+        { name: 'Stipend Accuracy', pct: 100 },
+        { name: 'Anti-Exploitation', pct: 100 },
+      ];
+      document.getElementById('trustMetrics').innerHTML = metrics.map(m => `
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:5px;">
+            <span>${m.name}</span><span style="color:${m.pct >= 95 ? '#059669' : '#F59E0B'};">${m.pct}%</span>
+          </div>
+          <div style="background:#E5E7EB;height:8px;border-radius:10px;overflow:hidden;">
+            <div style="width:${m.pct}%;height:100%;background:${m.pct >= 95 ? '#059669' : '#F59E0B'};border-radius:10px;"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderFeedback(feedback) {
+      if (!feedback || feedback.length === 0) {
+        feedback = [
+          { text: "No feedback from students yet.", star: 5, student: "System" }
+        ];
+      }
+      document.getElementById('studentFeedback').innerHTML = feedback.map(f => `
+        <div style="padding:10px;border-radius:8px;background:#F8FAFC;margin-bottom:8px;border-left:3px solid #F59E0B;">
+          <div style="font-size:13px;font-style:italic;color:#374151;">${f.text}</div>
+          <div style="font-size:12px;color:#9CA3AF;margin-top:4px;">— ${f.student} ${'⭐'.repeat(f.star)}</div>
+        </div>
+      `).join('');
+    }
+
+    init();
+  </script>
+
+
+</body>
+
+</html>

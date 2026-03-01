@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Tasks - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+</head>
+
+<body class="theme-student">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="tasks.html" class="nav-item active">📋 Browse Tasks</a>
+        <a href="mentors.html" class="nav-item">🎓 Find Mentor</a>
+        <a href="submit-task.html" class="nav-item">📤 My Submissions</a>
+        <a href="wallet.html" class="nav-item">💰 Wallet</a>
+        <a href="messages.html" class="nav-item">💬 Messaging</a>
+        <a href="profile.html" class="nav-item">👤 Profile</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">S</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Student</div>
+            <div class="user-role">Intern</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-title">Browse Tasks</div>
+        <div class="topbar-actions">
+          <div class="wallet-badge" onclick="window.location.href='wallet.html'">
+            <span>💰</span><span class="wallet-amount" id="walletAmt">$12,400</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-content page-fade">
+        <div class="filter-bar">
+          <select class="form-control" id="filterDomain" onchange="applyFilters()">
+            <option value="">All Domains</option>
+            <option value="AI/ML">AI/ML</option>
+            <option value="Web Dev">Web Dev</option>
+            <option value="Data Science">Data Science</option>
+            <option value="Design">Design</option>
+            <option value="Mobile">Mobile</option>
+          </select>
+          <select class="form-control" id="filterLevel" onchange="applyFilters()">
+            <option value="">All Levels</option>
+            <option value="Easy">Beginner</option>
+            <option value="Medium">Intermediate</option>
+            <option value="Hard">Advanced</option>
+          </select>
+          <select class="form-control" id="filterCompany" onchange="applyFilters()">
+            <option value="">All Companies</option>
+            <option value="Corporate">Corporate</option>
+            <option value="Startup">Startup</option>
+          </select>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+            <span>Reward:</span>
+            <input type="range" id="filterReward" min="200" max="1000" value="1000" step="100"
+              oninput="updateRewardLabel(this);applyFilters();" style="width:100px;">
+            <span id="rewardLabel" style="font-weight:700;color:var(--green);">≤$1,000</span>
+          </div>
+          <input type="text" class="form-control" id="searchInput" placeholder="🔍 Search tasks..."
+            oninput="applyFilters()" style="min-width:200px;">
+          <button class="btn btn-outline btn-sm" onclick="clearFilters()">✕ Clear</button>
+        </div>
+
+        <div class="section-header">
+          <div class="section-title">Available Tasks <span id="taskCount"
+              style="font-size:15px;color:#6B7280;font-weight:500;"></span></div>
+          <div style="font-size:13px;color:#6B7280;">⭐ All CSR-funded — You get paid regardless of hiring outcome</div>
+        </div>
+
+        <div class="tasks-grid" id="taskGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASK DETAIL MODAL content filled by JS -->
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    let currentTasks = [];
+
+    async function init() {
+      const user = getUser();
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      try {
+        const profile = await apiCall('/student/profile');
+        const wallet = await apiCall('/student/wallet');
+
+        document.getElementById('userName').textContent = profile.profile?.name || user.name || 'Student';
+        document.getElementById('userAvatar').textContent = (profile.profile?.name || user.name || 'S')[0].toUpperCase();
+        document.getElementById('walletAmt').textContent = '$' + (wallet.balance || 0).toLocaleString('en-US');
+
+        await applyFilters();
+      } catch (err) {
+        showToast('Error initializing: ' + err.message, 'error');
+      }
+    }
+
+    function updateRewardLabel(el) {
+      document.getElementById('rewardLabel').textContent = '≤$' + parseInt(el.value).toLocaleString('en-US');
+    }
+
+    async function applyFilters() {
+      const domain = document.getElementById('filterDomain').value;
+      const level = document.getElementById('filterLevel').value;
+      const companyType = document.getElementById('filterCompany').value;
+      const rewardMax = parseInt(document.getElementById('filterReward').value);
+      const search = document.getElementById('searchInput').value.toLowerCase();
+
+      let url = `/student/tasks?reward_max=${rewardMax}`;
+      if (domain) url += `&domain=${encodeURIComponent(domain)}`;
+      if (level) url += `&skill_level=${encodeURIComponent(level)}`;
+      if (companyType) url += `&company_type=${encodeURIComponent(companyType)}`;
+
+      try {
+        showLoader('Loading tasks...');
+        const data = await apiCall(url);
+        currentTasks = data.tasks || [];
+
+        // Client-side search as backend doesn't have search_title yet
+        if (search) {
+          currentTasks = currentTasks.filter(t =>
+            t.title.toLowerCase().includes(search) ||
+            (t.company_name && t.company_name.toLowerCase().includes(search))
+          );
+        }
+
+        renderTasks(currentTasks);
+      } catch (err) {
+        showToast('Error loading tasks: ' + err.message, 'error');
+      } finally {
+        hideLoader();
+      }
+    }
+
+    function clearFilters() {
+      document.getElementById('filterDomain').value = '';
+      document.getElementById('filterLevel').value = '';
+      document.getElementById('filterCompany').value = '';
+      document.getElementById('filterReward').value = 1000;
+      document.getElementById('searchInput').value = '';
+      document.getElementById('rewardLabel').textContent = '≤$1,000';
+      applyFilters();
+    }
+
+    function renderTasks(tasks) {
+      document.getElementById('taskCount').textContent = `(${tasks.length} tasks)`;
+      const grid = document.getElementById('taskGrid');
+      if (!tasks.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#6B7280;"><div style="font-size:48px;margin-bottom:16px;">🔍</div><div style="font-size:18px;font-weight:700;">No tasks match your filters</div><div style="margin-top:8px;">Try adjusting your search criteria</div></div>';
+        return;
+      }
+      grid.innerHTML = tasks.map(t => `
+        <div class="task-card">
+          <div class="task-card-header">
+            <div class="company-info">
+              <div class="company-logo">🏢</div>
+              <div>
+                <div class="company-name">${t.company_name || 'Company'}</div>
+                <div class="task-deadline">⏰ ${daysLeft(t.deadline)}</div>
+              </div>
+            </div>
+            <span class="badge badge-gold">⭐ CSR</span>
+          </div>
+          <div class="task-title">${t.title}</div>
+          <div class="task-skills">${(t.skills_required || []).map(s => `<span class="tag">${s}</span>`).join('')}</div>
+          <div style="font-size:13px;color:#6B7280;margin-bottom:12px;">${(t.description || '').slice(0, 80)}...</div>
+          <div style="font-size:12px;color:#6B7280;margin-bottom:12px;">👥 ${t.max_participants || 0} slots available</div>
+          <div class="task-meta">
+            <div>
+              <div class="task-reward">$${t.reward_per_candidate || 0}</div>
+              <div class="task-stipend">Stipend: $${(t.internship_stipend || 0).toLocaleString('en-US')}/mo</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              ${difficultyBadge(t.difficulty)}
+              <button class="btn btn-outline btn-sm" onclick="showTaskDetail('${t._id}')">Details</button>
+              <button class="btn btn-primary btn-sm" onclick="applyToTask('${t._id}')">Apply</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function showTaskDetail(id) {
+      const t = currentTasks.find(x => x._id === id);
+      if (!t) return;
+      const content = `
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;">
+          <div style="font-size:36px;">🏢</div>
+          <div>
+            <div style="font-size:20px;font-weight:800;">${t.title}</div>
+            <div style="color:#6B7280;font-size:14px;">${t.company_name || 'Company'} • ${t.company_type || 'Corporate'}</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+          <div style="background:#ECFDF5;padding:14px;border-radius:10px;text-align:center;">
+            <div style="font-size:24px;font-weight:800;color:var(--green);">$${t.reward_per_candidate}</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:2px;">Evaluation Reward</div>
+          </div>
+          <div style="background:#EFF6FF;padding:14px;border-radius:10px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:#1E40AF;">$${(t.internship_stipend || 0).toLocaleString('en-US')}/mo</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:2px;">Internship Stipend (if hired)</div>
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="font-weight:700;margin-bottom:8px;">📋 Task Description</div>
+          <div style="font-size:14px;color:#374151;line-height:1.7;">${t.description}</div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="font-weight:700;margin-bottom:8px;">🛠️ Required Skills</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">${(t.skills_required || []).map(s => `<span class="badge badge-blue">${s}</span>`).join('')}</div>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:20px;font-size:13px;flex-wrap:wrap;">
+          <span>📅 Deadline: <strong>${formatDate(t.deadline)}</strong></span>
+          <span>${difficultyBadge(t.difficulty)}</span>
+          <span>👥 ${t.max_participants} slots</span>
+        </div>
+        <div style="background:#FFFBEB;border:1px solid #FCD34D;padding:12px;border-radius:8px;font-size:13px;margin-bottom:20px;">
+          ⭐ <strong>CSR-Funded:</strong> You will receive $${t.reward_per_candidate} for your submission regardless of whether you are hired. Funds locked in escrow.
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;" onclick="applyToTask('${t._id}');closeModal(this);">
+          🚀 Apply & Submit Task
+        </button>
+      `;
+      openModal(content, '📋 Task Details');
+    }
+
+    function applyToTask(id) {
+      const t = currentTasks.find(x => x._id === id);
+      localStorage.setItem('currentTask', JSON.stringify(t));
+      window.location.href = 'submit-task.html';
+    }
+
+    init();
+  </script>
+
+
+</body>
+
+</html>

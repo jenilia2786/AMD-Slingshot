@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verified Mentors - AccelerateAI</title>
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+
+<body class="theme-student">
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+                <a href="tasks.html" class="nav-item">📋 Browse Tasks</a>
+                <a href="mentors.html" class="nav-item active">🎓 Find Mentor</a>
+                <a href="submit-task.html" class="nav-item">📤 My Submissions</a>
+                <a href="wallet.html" class="nav-item">💰 Wallet</a>
+                <a href="messages.html" class="nav-item">💬 Messaging</a>
+                <a href="profile.html" class="nav-item">👤 Profile</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">S</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Student</div>
+                        <div class="user-role">Intern</div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <div class="topbar">
+                <div class="topbar-title">Verified Mentors</div>
+                <div class="topbar-actions">
+                    <div id="eligibilityBadge"></div>
+                </div>
+            </div>
+
+            <div class="page-content page-fade">
+                <div class="section-header">
+                    <div class="section-title">Request Mentorship</div>
+                    <p style="color:#6B7280;font-size:14px;margin-top:4px;">Request guidance from industry experts. Once
+                        accepted, you can chat and receive feedback.</p>
+                </div>
+
+                <div class="grid-3" id="mentorGrid" style="margin-top:20px;">
+                    <!-- Mentors will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        async function init() {
+            const user = getUser();
+            if (!user) { window.location.href = 'login.html'; return; }
+
+            try {
+                const profile = await apiCall('/student/profile');
+                const data = await apiCall('/mentorship/mentors');
+
+                document.getElementById('userName').textContent = profile.profile?.name || user.name;
+                document.getElementById('userAvatar').textContent = (profile.profile?.name || user.name)[0].toUpperCase();
+
+                const badge = document.getElementById('eligibilityBadge');
+                if (profile.profile?.alumni_mode) {
+                    badge.innerHTML = '<span class="badge badge-red">Alumni Mode (Read-only)</span>';
+                } else {
+                    badge.innerHTML = '<span class="badge badge-green">Academic Eligibility Verified</span>';
+                }
+
+                renderMentors(data.mentors);
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
+        }
+
+        function renderMentors(mentors) {
+            const grid = document.getElementById('mentorGrid');
+            if (!mentors.length) {
+                grid.innerHTML = '<p>No mentors found.</p>';
+                return;
+            }
+
+            grid.innerHTML = mentors.map(m => `
+        <div class="stat-card" style="display:flex;flex-direction:column;gap:12px;text-align:left;height:auto;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:48px;height:48px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;">
+              ${m.name[0]}
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:16px;">${m.name}</div>
+              <div style="font-size:13px;color:#6B7280;">${m.domain} • ${m.experience} yrs exp</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#4B5563;line-height:1.5;">
+            Verified expert willing to guide students in ${m.domain}.
+          </div>
+          ${renderButton(m)}
+        </div>
+      `).join('');
+        }
+
+        function renderButton(m) {
+            if (m.status === 'accepted') {
+                return `<button class="btn btn-green btn-sm" disabled>✓ Mentoring You</button>`;
+            } else if (m.status === 'pending') {
+                return `<button class="btn btn-outline btn-sm" disabled>⏳ Request Pending</button>`;
+            } else if (m.status === 'rejected') {
+                return `<button class="btn btn-outline btn-sm" onclick="requestMentorship('${m.id}')">Retry Request</button>`;
+            } else {
+                return `<button class="btn btn-primary btn-sm" onclick="requestMentorship('${m.id}')">Request Mentorship</button>`;
+            }
+        }
+
+        async function requestMentorship(id) {
+            try {
+                await apiCall(`/mentorship/request/${id}`, 'POST');
+                showToast('Request sent successfully!', 'success');
+                init(); // Refresh
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

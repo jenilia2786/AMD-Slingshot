@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSR Wallet - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="theme-company">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="create-task.html" class="nav-item">➕ Create Task</a>
+        <a href="candidates.html" class="nav-item">👥 Candidates</a>
+        <a href="csr-wallet.html" class="nav-item active">💰 Wallet</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">C</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Company</div>
+            <div class="user-role">Corporate</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-title">CSR Wallet</div>
+        <div class="topbar-actions">
+          <button class="btn btn-gold" onclick="showDepositModal()">💰 Deposit CSR Funds</button>
+        </div>
+      </div>
+
+      <div class="page-content page-fade">
+        <!-- CSR FINANCIAL CLUSTERS -->
+        <div
+          style="display:grid;grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));gap:24px;margin-bottom:32px;">
+          <!-- TOTAL FUND -->
+          <div class="wallet-summary-card"
+            style="background: linear-gradient(135deg, #7c3aed, #4f46e5); margin-bottom: 0; padding: 24px; box-shadow: 0 10px 20px rgba(124, 58, 237, 0.2);">
+            <div style="font-size: 13px; opacity: 0.9; font-weight: 700; text-transform: uppercase;">💰 Total CSR Fund
+            </div>
+            <div style="font-size: 36px; font-weight: 800; margin: 8px 0;" id="totalBalance">$6,00,000</div>
+            <div style="font-size: 12px; opacity: 0.8;">Total capital deposited in platform</div>
+          </div>
+
+          <!-- ALLOCATIONS -->
+          <div class="card-flat" style="padding: 24px; border-left: 4px solid #7c3aed;">
+            <div
+              style="font-size: 13px; color: #6b7280; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;">
+              📊 Allocations</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-size: 14px; font-weight: 600;">Startup Guidance fund</span>
+              <span style="font-weight: 700; color: #7c3aed;">$2,50,000</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="font-size: 14px; font-weight: 600;">Internship fund</span>
+              <span style="font-weight: 700; color: #4f46e5;">$3,50,000</span>
+            </div>
+          </div>
+
+          <!-- ESCROW & PENDING -->
+          <div class="card-flat" style="padding: 24px; border-left: 4px solid #f59e0b;">
+            <div
+              style="font-size: 13px; color: #6b7280; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;">
+              🔒 Safety & Payouts</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-size: 14px; font-weight: 600;">Total in Escrow</span>
+              <span style="font-weight: 700; color: #f59e0b;" id="totalEscrowDisplay">$79,420</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="font-size: 14px; font-weight: 600;">Pending Release (To be sent)</span>
+              <span style="font-weight: 700; color: #059669;" id="pendingPayouts">$12,650</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STARTUP ALLOCATION BREAKDOWN (New Section) -->
+        <div class="section-header">
+          <div class="section-title">🏢 Startup Allocation Breakdown</div>
+        </div>
+        <div class="grid-4" style="gap: 16px; margin-bottom: 32px;" id="startupAllocations">
+          <div class="card-flat" style="background: #f8fafc; padding: 16px;">
+            <div style="font-weight: 700; margin-bottom: 4px;">SwiftAI Ltd</div>
+            <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">Innovation Partner</div>
+            <div style="font-size: 18px; font-weight: 800; color: #7c3aed;">$75,000</div>
+          </div>
+          <div class="card-flat" style="background: #f8fafc; padding: 16px;">
+            <div style="font-weight: 700; margin-bottom: 4px;">DataFlow</div>
+            <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">SaaS Integration</div>
+            <div style="font-size: 18px; font-weight: 800; color: #7c3aed;">$1,25,000</div>
+          </div>
+          <div class="card-flat"
+            style="background: #ffffff; padding: 16px; display: flex; align-items: center; justify-content: center; border: 2px dashed #e2e8f0; cursor: pointer;">
+            <span style="color: #6b7280; font-size: 13px; font-weight: 600;">+ Allocate to Startup</span>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:24px;gap:24px;">
+          <div class="card-flat">
+            <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;">🔒 Active Escrows</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>Locked Amount</th>
+                    <th>Slots</th>
+                    <th>Expiry</th>
+                  </tr>
+                </thead>
+                <tbody id="activeEscrowsBody">
+                  <tr>
+                    <td colspan="4" style="text-align:center;color:#6B7280;">Loading active escrows...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">📊 CSR Utilization (Last 30 Days)</div>
+            <canvas id="csrChart" height="200"></canvas>
+          </div>
+        </div>
+        <div class="card-flat" style="margin-bottom:24px;">
+          <div
+            style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+            <h3 style="font-size:18px;font-weight:800;">📜 CSR Transaction Log</h3>
+            <div style="display:flex;gap:10px;">
+              <select class="form-control" style="width:auto;" id="logFilter" onchange="filterLog()">
+                <option value="">All Types</option>
+                <option value="deposit">Deposits</option>
+                <option value="locked">Escrow Locks</option>
+                <option value="released">Payments Released</option>
+              </select>
+              <button class="btn btn-outline btn-sm" onclick="downloadLog()">📥 Export CSV</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Task</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Blockchain Hash</th>
+                </tr>
+              </thead>
+              <tbody id="logBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card-flat" style="margin-top:24px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3 style="font-size:18px;font-weight:800;">🚀 Startup Fund Allocation</h3>
+            <span class="badge badge-gold">Prototype Mode</span>
+          </div>
+          <p style="color:#6B7280;font-size:14px;margin-bottom:20px;">Allocate Reward pools directly to supported startups
+            for their independent internship programs. These funds are locked in a secondary escrow.</p>
+          <div class="grid-2" style="gap:24px;align-items:flex-end;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Startup Name / ID</label>
+              <input type="text" class="form-control" id="startupName" placeholder="e.g. TN Tech Systems">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Allocation Amount ($)</label>
+              <input type="number" class="form-control" id="allocAmt" placeholder="Enter amount">
+            </div>
+            <button class="btn btn-primary" onclick="allocateFunds()"
+              style="width:100%;justify-content:center;padding:14px;">📦 Allocate CSR to Startup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    let currentTransactions = [];
+    let walletStats = { total: 0, available: 0, locked: 0 };
+
+    async function init() {
+      const user = getUser();
+      if (!user) { window.location.href = 'login.html'; return; }
+      document.getElementById('userName').textContent = user.name || 'Company';
+
+      try {
+        const walletData = await apiCall('/company/csr-wallet');
+        walletStats = {
+          total: walletData.total_balance || 0,
+          available: walletData.available || 0,
+          locked: walletData.escrow_locked || 0
+        };
+
+        currentTransactions = walletData.transactions || [];
+
+        updateBalanceDisplays();
+        renderLog(currentTransactions);
+        renderActiveEscrowsFromTxns(currentTransactions);
+        renderChart();
+      } catch (err) {
+        showToast('Error fetching wallet: ' + err.message, 'error');
+      }
+    }
+
+    function updateBalanceDisplays() {
+      // Primary IDs
+      if (document.getElementById('totalBalance')) {
+        document.getElementById('totalBalance').textContent = formatCurrency(walletStats.total);
+      }
+      if (document.getElementById('totalEscrowDisplay')) {
+        document.getElementById('totalEscrowDisplay').textContent = formatCurrency(walletStats.locked);
+      }
+
+      // Secondary fields (Calculated or from API if available)
+      if (document.getElementById('pendingPayouts')) {
+        // Mocking pending as 15% of escrow for visual clarity, or 0 if locked is 0
+        const pending = Math.round(walletStats.locked * 0.15);
+        document.getElementById('pendingPayouts').textContent = formatCurrency(pending);
+      }
+    }
+
+    function renderActiveEscrowsFromTxns(txns) {
+      const lockedTxns = txns.filter(t => t.type === 'escrow_lock');
+      const body = document.getElementById('activeEscrowsBody');
+      if (lockedTxns.length === 0) {
+        body.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#6B7280;">No active escrows</td></tr>';
+        return;
+      }
+      body.innerHTML = lockedTxns.slice(0, 5).map(t => `
+        <tr>
+          <td>Task ${t.task_id || 'ID'}</td>
+          <td style="font-weight:700;color:#F59E0B;">$${Math.abs(t.amount).toLocaleString('en-US')}</td>
+          <td>-</td>
+          <td>${new Date(t.timestamp).toLocaleDateString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    function filterLog() {
+      const type = document.getElementById('logFilter').value;
+      let filtered = currentTransactions;
+      if (type === 'deposit') filtered = currentTransactions.filter(t => t.type === 'deposit');
+      else if (type === 'locked') filtered = currentTransactions.filter(t => t.type === 'escrow_lock');
+      else if (type === 'released') filtered = currentTransactions.filter(t => t.type === 'reward_payment');
+      renderLog(filtered);
+    }
+
+    const typeLabels = {
+      deposit: '💵 Deposit',
+      escrow_lock: '🔒 Escrow Lock',
+      reward_payment: '💸 Released',
+      refund: '↩ Refunded'
+    };
+    const typeColors = {
+      deposit: '#059669',
+      escrow_lock: '#F59E0B',
+      reward_payment: '#1E40AF',
+      refund: '#6B7280'
+    };
+
+    function renderLog(txns) {
+      document.getElementById('logBody').innerHTML = txns.map(t => `
+        <tr>
+          <td style="font-size:13px;">${new Date(t.timestamp).toLocaleDateString()}</td>
+          <td><span class="badge" style="background:${(typeColors[t.type] || '#6B7280')}20;color:${typeColors[t.type] || '#6B7280'};">${typeLabels[t.type] || t.type}</span></td>
+          <td style="font-size:13px;">${t.task_id || '-'}</td>
+          <td style="font-weight:800;font-size:15px;color:${t.amount > 0 ? '#059669' : '#1E40AF'};">
+            ${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toLocaleString('en-US')}
+          </td>
+          <td><span class="status-completed">${t.status || 'completed'}</span></td>
+          <td style="font-family:'Courier New',monospace;font-size:12px;color:#3B82F6;cursor:pointer;" onclick="showToast('Blockchain ID: ${t._id}','success')">
+            ${t._id ? t._id.slice(-8).toUpperCase() : 'N/A'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderChart() {
+      const ctx = document.getElementById('csrChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['W1', 'W2', 'W3', 'W4'],
+          datasets: [
+            { label: 'Deposited ($)', data: [150000, 0, 100000, 0], backgroundColor: 'rgba(5,150,105,0.7)', borderRadius: 6 },
+            { label: 'Released ($)', data: [2400, 5200, 3800, 6100], backgroundColor: 'rgba(30,64,175,0.7)', borderRadius: 6 }
+          ]
+        },
+        options: { responsive: true, scales: { y: { ticks: { callback: v => '$' + (v >= 1000 ? v / 1000 + 'K' : v) }, grid: { color: '#F3F4F6' } }, x: { grid: { display: false } } }, plugins: { legend: { position: 'bottom' } } }
+      });
+    }
+
+    function showDepositModal() {
+      const content = `
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="font-size:48px;">💰</div>
+          <div style="font-size:18px;font-weight:700;margin-top:8px;">Deposit CSR Funds</div>
+          <div style="font-size:13px;color:#6B7280;margin-top:4px;">Blockchain tracked for CSR compliance</div>
+        </div>
+        <div class="form-group"><label class="form-label">Amount ($)</label><input type="number" class="form-control" id="depositAmt" placeholder="50000" min="1000"></div>
+        <div class="form-group"><label class="form-label">Purpose Memo</label><input type="text" class="form-control" id="depositMemo" placeholder="CSR Allocation Q1 2026"></div>
+        <div style="background:#EFF6FF;padding:12px;border-radius:8px;font-size:13px;color:#1E40AF;margin-bottom:20px;">ℹ️ Funds available within 24 hours. Government compliance receipt auto-generated.</div>
+        <button class="btn btn-gold" style="width:100%;justify-content:center;padding:14px;" onclick="processDeposit()">💳 Confirm Deposit</button>
+      `;
+      openModal(content, '💰 Deposit CSR Funds');
+    }
+
+    async function processDeposit() {
+      const amt = document.getElementById('depositAmt')?.value;
+      if (!amt || parseInt(amt) < 1000) { showToast('Minimum deposit is $1,000', 'warning'); return; }
+
+      try {
+        showLoader('Processing Blockchain Deposit...');
+        const res = await apiCall(`/company/deposit-csr?amount=${amt}`, 'POST');
+        hideLoader();
+        document.querySelector('.modal-overlay')?.remove();
+        showToast(res.message || 'Deposit initiated!', 'success');
+        init();
+      } catch (err) {
+        hideLoader();
+        showToast('Deposit failed: ' + err.message, 'error');
+      }
+    }
+
+    async function allocateFunds() {
+      const name = document.getElementById('startupName').value.trim();
+      const amt = document.getElementById('allocAmt').value;
+
+      if (!name) { showToast('Startup name is required', 'warning'); return; }
+      if (!amt || parseInt(amt) <= 0) { showToast('Enter valid amount', 'warning'); return; }
+      if (parseInt(amt) > walletStats.available) { showToast('Insufficient available balance', 'error'); return; }
+
+      try {
+        showLoader('Allocating CSR Funds...');
+        const res = await apiCall(`/company/allocate-csr?startup_id=${encodeURIComponent(name)}&amount=${amt}`, 'POST');
+        hideLoader();
+        showToast(res.message || `$${parseInt(amt).toLocaleString('en-US')} allocated to ${name}`, 'success');
+
+        // Clear inputs
+        document.getElementById('startupName').value = '';
+        document.getElementById('allocAmt').value = '';
+
+        init();
+      } catch (err) {
+        hideLoader();
+        showToast('Allocation failed: ' + err.message, 'error');
+      }
+    }
+
+    function downloadLog() {
+      if (!currentTransactions.length) { showToast('No data to export', 'info'); return; }
+      const rows = [['Date', 'Type', 'Task', 'Amount', 'Status', 'ID']];
+      currentTransactions.forEach(t => {
+        rows.push([new Date(t.timestamp).toLocaleDateString(), t.type, t.task_id || '-', t.amount, t.status, t._id]);
+      });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv' }));
+      a.download = `csr_wallet_log_${new Date().getTime()}.csv`;
+      a.click();
+      showToast('CSV downloaded!', 'success');
+    }
+
+    init();
+  </script>
+
+
+</body>
+
+</html>

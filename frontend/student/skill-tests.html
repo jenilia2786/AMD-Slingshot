@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Certification - AccelerateAI</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 24px;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 16px;
+            margin: 12px 0;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .option-btn:hover {
+            border-color: #1E40AF;
+            background: #EFF6FF;
+        }
+
+        .option-btn.selected {
+            border-color: #1E40AF;
+            background: #1E40AF;
+            color: white;
+        }
+
+        .integrity-warning {
+            background: #FEF2F2;
+            border: 1px solid #F87171;
+            color: #991B1B;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .timer-bar {
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: #1E40AF;
+            width: 100%;
+            transition: width 1s linear;
+        }
+    </style>
+</head>
+
+<body class="theme-student">
+    <div class="test-container">
+        <div id="intro-screen">
+            <div class="card-flat" style="text-align:center; padding:48px;">
+                <div style="font-size:48px; margin-bottom:24px;">⚖️</div>
+                <h1 style="font-size:24px; font-weight:800; margin-bottom:16px;">Verified Skill Certification</h1>
+                <p style="color:#4B5563; line-height:1.6; margin-bottom:32px;">
+                    This is a time-bound exam (25 questions). <br>
+                    <strong>Integrity Rules:</strong> Full-screen is mandatory. Switching tabs more than twice will
+                    invalidate your score.
+                </p>
+                <div class="form-group" style="max-width:300px; margin:0 auto 24px; text-align:left;">
+                    <label class="form-label">Select Domain</label>
+                    <select class="form-control" id="domainSelect">
+                        <option>Machine Learning</option>
+                        <option>Web Development</option>
+                        <option>Python Programming</option>
+                        <option>Data Engineering</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="startTest()">Start Certified Exam</button>
+            </div>
+        </div>
+
+        <div id="test-screen" style="display:none;">
+            <div class="integrity-warning" id="integrityAlert">
+                ⚠️ <strong>Integrity Warning:</strong> You switched tabs. Multiple violations will invalidate the test.
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="font-weight:800; font-size:14px; color:#6B7280;" id="questionNum">Question 1 of 25</div>
+                <div style="font-weight:800; color:#DC2626;" id="timeLeft">20:00</div>
+            </div>
+            <div class="timer-bar">
+                <div class="timer-fill" id="timerFill"></div>
+            </div>
+
+            <div class="question-card">
+                <h2 style="font-size:18px; font-weight:700; line-height:1.5; margin-bottom:24px;" id="questionText">
+                    Loading...</h2>
+                <div id="optionsContainer"></div>
+                <div style="margin-top:32px; display:flex; justify-content:flex-end;">
+                    <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn" disabled>Next Question
+                        →</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="result-screen" style="display:none;">
+            <div class="card-flat" style="text-align:center; padding:48px;">
+                <div id="resultIcon" style="font-size:48px; margin-bottom:16px;">🎉</div>
+                <h2 style="font-size:22px; font-weight:800;" id="resultTitle">Test Completed!</h2>
+                <div style="font-size:56px; font-weight:900; color:#1E40AF; margin:24px 0;" id="finalScore">88%</div>
+                <p style="color:#6B7280; font-size:14px; margin-bottom:32px;" id="resultMsg">Verified by AI Integrity
+                    Shield.</p>
+
+                <div id="confirmationActions">
+                    <button class="btn btn-primary" onclick="saveResult()">Add to My Verified Profile</button>
+                    <button class="btn btn-outline" style="margin-left:12px;"
+                        onclick="window.location.href='profile.html'">Discard Score</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        let questions = [];
+        let currentIdx = 0;
+        let answers = {};
+        let tabSwitches = 0;
+        let testActive = false;
+        let timerInterval;
+        let secondsLeft = 1200; // 20 mins
+        let tempId = null;
+
+        async function startTest() {
+            const domain = document.getElementById('domainSelect').value;
+            try {
+                const res = await apiCall(`/test/questions?domain=${domain}`);
+                questions = res.questions;
+                if (!questions.length) {
+                    // Mock questions if DB is empty
+                    questions = Array.from({ length: 25 }, (_, i) => ({
+                        _id: i,
+                        text: `Verified Skill Test Question #${i + 1} for ${domain}?`,
+                        options: ["Option A", "Option B", "Option C", "Option D"],
+                        correct: "Option A"
+                    }));
+                }
+
+                document.getElementById('intro-screen').style.display = 'none';
+                document.getElementById('test-screen').style.display = 'block';
+                document.documentElement.requestFullscreen().catch(() => { });
+
+                testActive = true;
+                renderQuestion();
+                startTimer();
+            } catch (e) { alert("Error starting test: " + e.message); }
+        }
+
+        function renderQuestion() {
+            const q = questions[currentIdx];
+            document.getElementById('questionNum').textContent = `Question ${currentIdx + 1} of 25`;
+            document.getElementById('questionText').textContent = q.text;
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = q.options.map(opt => `
+        <button class="option-btn ${answers[currentIdx] === opt ? 'selected' : ''}" onclick="selectOption('${opt}')">${opt}</button>
+      `).join('');
+            document.getElementById('nextBtn').disabled = !answers[currentIdx];
+        }
+
+        function selectOption(opt) {
+            answers[currentIdx] = opt;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentIdx < 24) {
+                currentIdx++;
+                renderQuestion();
+            } else {
+                finishTest();
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                secondsLeft--;
+                const m = Math.floor(secondsLeft / 60);
+                const s = secondsLeft % 60;
+                document.getElementById('timeLeft').textContent = `${m}:${String(s).padStart(2, '0')}`;
+                document.getElementById('timerFill').style.width = `${(secondsLeft / 1200) * 100}%`;
+                if (secondsLeft <= 0) finishTest();
+            }, 1000);
+        }
+
+        window.addEventListener('blur', () => {
+            if (!testActive) return;
+            tabSwitches++;
+            document.getElementById('integrityAlert').style.display = 'block';
+            if (tabSwitches > 2) finishTest();
+        });
+
+        async function finishTest() {
+            testActive = false;
+            clearInterval(timerInterval);
+            document.exitFullscreen().catch(() => { });
+
+            let correctCount = 0;
+            questions.forEach((q, i) => { if (answers[i] === q.correct) correctCount++; });
+            const finalScore = Math.round((correctCount / 25) * 100);
+
+            showLoader('Verifying integrity and calculating verified score...');
+            try {
+                const res = await apiCall('/test/submit', 'POST', {
+                    domain: document.getElementById('domainSelect').value,
+                    score: finalScore,
+                    tab_switches: tabSwitches
+                });
+
+                hideLoader();
+                document.getElementById('test-screen').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'block';
+
+                if (res.status === 'flagged') {
+                    document.getElementById('resultIcon').textContent = '⚠️';
+                    document.getElementById('resultTitle').textContent = 'Integrity Violation';
+                    document.getElementById('finalScore').textContent = 'VOID';
+                    document.getElementById('finalScore').style.color = '#DC2626';
+                    document.getElementById('resultMsg').textContent = res.message;
+                    document.getElementById('confirmationActions').style.display = 'none';
+                } else {
+                    tempId = res.temp_id;
+                    document.getElementById('finalScore').textContent = `${finalScore}%`;
+                }
+            } catch (e) { alert(e.message); }
+        }
+
+        async function saveResult() {
+            if (!tempId) return;
+            try {
+                await apiCall(`/test/confirm/${tempId}?save=true`, 'POST');
+                showToast('Score added to your verified profile!', 'success');
+                setTimeout(() => window.location.href = 'profile.html', 1500);
+            } catch (e) { alert(e.message); }
+        }
+    </script>
+</body>
+
+</html>

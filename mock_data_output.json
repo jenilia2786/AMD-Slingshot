@@ -1,0 +1,351 @@
+{
+  "students": [
+    {
+      "_id": "STU001",
+      "email": "student1@nm.tn.gov.in",
+      "password_hash": "$2b$10$mock_hash_student1",
+      "name": "Ashwin Kumar T",
+      "role": "student",
+      "college": "Anna University, Chennai",
+      "college_tier": 1,
+      "branch": "CSE",
+      "nm_id": "NM2024001",
+      "skills": [
+        "Python",
+        "Machine Learning",
+        "SQL",
+        "Pandas"
+      ],
+      "wallet_balance": 12400,
+      "completed_tasks": 8,
+      "gender": "Male",
+      "district": "Chennai"
+    },
+    {
+      "_id": "STU002",
+      "email": "student2@nm.tn.gov.in",
+      "password_hash": "$2b$10$mock_hash_student2",
+      "name": "Priya Dharshini R",
+      "role": "student",
+      "college": "PSG College of Technology",
+      "college_tier": 2,
+      "branch": "AI&DS",
+      "nm_id": "NM2024002",
+      "skills": [
+        "React",
+        "JavaScript",
+        "CSS",
+        "Node.js"
+      ],
+      "wallet_balance": 8750,
+      "completed_tasks": 5,
+      "gender": "Female",
+      "district": "Coimbatore"
+    },
+    {
+      "_id": "STU003",
+      "email": "student3@nm.tn.gov.in",
+      "password_hash": "$2b$10$mock_hash_student3",
+      "name": "Karthik Selvan M",
+      "role": "student",
+      "college": "Thiagarajar College of Engineering",
+      "college_tier": 2,
+      "branch": "IT",
+      "nm_id": "NM2024003",
+      "skills": [
+        "Java",
+        "Spring Boot",
+        "MySQL",
+        "Docker"
+      ],
+      "wallet_balance": 5200,
+      "completed_tasks": 3,
+      "gender": "Male",
+      "district": "Madurai"
+    }
+  ],
+  "companies": [
+    {
+      "_id": "COMP001",
+      "email": "techcorp@company.com",
+      "password_hash": "$2b$10$mock_hash_comp1",
+      "name": "TechCorp Solutions",
+      "role": "company",
+      "type": "Corporate",
+      "csr_wallet": 245000,
+      "escrow_locked": 68500,
+      "trust_score": 4.7,
+      "tasks_posted": 24,
+      "hired": 18
+    },
+    {
+      "_id": "COMP002",
+      "email": "startup@company.com",
+      "password_hash": "$2b$10$mock_hash_comp2",
+      "name": "StartupX Labs",
+      "role": "company",
+      "type": "Startup",
+      "csr_wallet": 78000,
+      "escrow_locked": 12000,
+      "trust_score": 4.9,
+      "tasks_posted": 8,
+      "hired": 12
+    },
+    {
+      "_id": "COMP003",
+      "email": "bigcorp@company.com",
+      "password_hash": "$2b$10$mock_hash_comp3",
+      "name": "InnovateBig Corp",
+      "role": "company",
+      "type": "Corporate",
+      "csr_wallet": 520000,
+      "escrow_locked": 156000,
+      "trust_score": 4.5,
+      "tasks_posted": 18,
+      "hired": 22
+    }
+  ],
+  "tasks": [
+    {
+      "_id": "TASK001",
+      "company_id": "COMP009",
+      "company_name": "DevOps Masters",
+      "company_type": "Corporate",
+      "title": "Python Data Pipeline Developer",
+      "description": "Complete a medium-level Data Science task demonstrating proficiency in Python, SQL, Pandas. Deliverables include working code, documentation, and tests.",
+      "skills_required": [
+        "Python",
+        "SQL",
+        "Pandas"
+      ],
+      "difficulty": "Medium",
+      "domain": "Data Science",
+      "reward_per_candidate": 500,
+      "internship_stipend": 15000,
+      "max_participants": 18,
+      "current_submissions": 13,
+      "deadline": "2026-03-13T20:43:26.347004",
+      "task_type": "Code",
+      "work_mode": "On-site",
+      "internship_duration": "3 months",
+      "status": "active",
+      "escrow_id": "ESC_00001",
+      "created_at": "2026-02-22T20:43:26.347004"
+    },
+    {
+      "_id": "TASK002",
+      "company_id": "COMP011",
+      "company_name": "DataMind Analytics",
+      "company_type": "Corporate",
+      "title": "React Frontend Component Library",
+      "description": "Complete a easy-level Web Dev task demonstrating proficiency in React, JavaScript, CSS. Deliverables include working code, documentation, and tests.",
+      "skills_required": [
+        "React",
+        "JavaScript",
+        "CSS"
+      ],
+      "difficulty": "Easy",
+      "domain": "Web Dev",
+      "reward_per_candidate": 700,
+      "internship_stipend": 18000,
+      "max_participants": 38,
+      "current_submissions": 21,
+      "deadline": "2026-03-02T20:43:26.347004",
+      "task_type": "Code",
+      "work_mode": "Remote",
+      "internship_duration": "6 months",
+      "status": "active",
+      "escrow_id": "ESC_00002",
+      "created_at": "2026-02-21T20:43:26.347004"
+    },
+    {
+      "_id": "TASK003",
+      "company_id": "COMP002",
+      "company_name": "StartupX Labs",
+      "company_type": "Startup",
+      "title": "ML Model for Sentiment Analysis",
+      "description": "Complete a hard-level AI/ML task demonstrating proficiency in Python, NLP, TensorFlow. Deliverables include working code, documentation, and tests.",
+      "skills_required": [
+        "Python",
+        "NLP",
+        "TensorFlow"
+      ],
+      "difficulty": "Hard",
+      "domain": "AI/ML",
+      "reward_per_candidate": 400,
+      "internship_stipend": 8000,
+      "max_participants": 44,
+      "current_submissions": 29,
+      "deadline": "2026-03-03T20:43:26.347004",
+      "task_type": "Code",
+      "work_mode": "Hybrid",
+      "internship_duration": "1 month",
+      "status": "active",
+      "escrow_id": "ESC_00003",
+      "created_at": "2026-02-14T20:43:26.347004"
+    }
+  ],
+  "submissions": [
+    {
+      "_id": "SUB00001",
+      "student_id": "STU028",
+      "student_name": "Murugan Raj",
+      "task_id": "TASK021",
+      "task_title": "Python Data Pipeline Developer",
+      "company_id": "COMP015",
+      "code": "# Student submission\ndef solution():\n    pass",
+      "language": "Java",
+      "ai_scores": {
+        "technical": 63,
+        "plagiarism": 94,
+        "resume_match": 92,
+        "combined": 78,
+        "fraud_status": "pass",
+        "recommendation": "maybe"
+      },
+      "reward_amount": 1000,
+      "reward_status": "pending",
+      "status": "pending",
+      "submitted_at": "2026-02-15T20:43:26.347004",
+      "evaluated_at": null
+    },
+    {
+      "_id": "SUB00002",
+      "student_id": "STU030",
+      "student_name": "Deepika Venkatesh",
+      "task_id": "TASK006",
+      "task_title": "Flutter Mobile App Development",
+      "company_id": "COMP008",
+      "code": "# Student submission\ndef solution():\n    pass",
+      "language": "Java",
+      "ai_scores": {
+        "technical": 91,
+        "plagiarism": 100,
+        "resume_match": 93,
+        "combined": 94,
+        "fraud_status": "pass",
+        "recommendation": "hire"
+      },
+      "reward_amount": 500,
+      "reward_status": "paid",
+      "status": "evaluated",
+      "submitted_at": "2026-02-24T20:43:26.347004",
+      "evaluated_at": "2026-02-24T07:43:26.347004"
+    },
+    {
+      "_id": "SUB00003",
+      "student_id": "STU006",
+      "student_name": "Ravi Venkatesh",
+      "task_id": "TASK002",
+      "task_title": "React Frontend Component Library",
+      "company_id": "COMP011",
+      "code": "# Student submission\ndef solution():\n    pass",
+      "language": "JavaScript",
+      "ai_scores": {
+        "technical": 69,
+        "plagiarism": 89,
+        "resume_match": 81,
+        "combined": 77,
+        "fraud_status": "pass",
+        "recommendation": "maybe"
+      },
+      "reward_amount": 700,
+      "reward_status": "paid",
+      "status": "evaluated",
+      "submitted_at": "2026-02-20T20:43:26.347004",
+      "evaluated_at": "2026-02-23T23:43:26.347004"
+    }
+  ],
+  "transactions": [
+    {
+      "_id": "TXN_00001",
+      "timestamp": "2026-01-25T20:43:26.349035",
+      "type": "escrow_release",
+      "from_entity": {
+        "type": "company_csr",
+        "id": "COMP009",
+        "name": "DevOps Masters"
+      },
+      "to_entity": {
+        "type": "student",
+        "id": "STU041",
+        "name": "Santhiya Venkatesh"
+      },
+      "amount": 41067,
+      "task_id": "TASK005",
+      "previous_hash": "0x0000000000000000",
+      "current_hash": "0x837FA9CEB7091425",
+      "verified": true,
+      "metadata": {
+        "ai_score": null,
+        "evaluation_id": null
+      }
+    },
+    {
+      "_id": "TXN_00002",
+      "timestamp": "2026-01-25T22:13:26.349035",
+      "type": "csr_deposit",
+      "from_entity": {
+        "type": "company_csr",
+        "id": "COMP004",
+        "name": "CodeCraft Tech"
+      },
+      "to_entity": {
+        "type": "student",
+        "id": "STU045",
+        "name": "Santhiya Raj"
+      },
+      "amount": 113156,
+      "task_id": "TASK023",
+      "previous_hash": "0x837FA9CEB7091425",
+      "current_hash": "0xCEF7B80C12B35801",
+      "verified": true,
+      "metadata": {
+        "ai_score": null,
+        "evaluation_id": null
+      }
+    },
+    {
+      "_id": "TXN_00003",
+      "timestamp": "2026-01-25T23:43:26.349035",
+      "type": "reward_payment",
+      "from_entity": {
+        "type": "company_csr",
+        "id": "COMP015",
+        "name": "CodeBase Solutions"
+      },
+      "to_entity": {
+        "type": "student",
+        "id": "STU030",
+        "name": "Deepika Venkatesh"
+      },
+      "amount": 914,
+      "task_id": "TASK015",
+      "previous_hash": "0xCEF7B80C12B35801",
+      "current_hash": "0x325C0DAB5835C8DF",
+      "verified": true,
+      "metadata": {
+        "ai_score": 71,
+        "evaluation_id": "EVAL_00002"
+      }
+    }
+  ],
+  "government": [
+    {
+      "_id": "GOV001",
+      "email": "admin@tn.gov.in",
+      "password_hash": "$2b$10$mock_hash_gov1",
+      "name": "TN Admin - Rajesh Babu",
+      "role": "government",
+      "department": "Labour & Employment"
+    }
+  ],
+  "analytics": {
+    "csr_deposited_total": 2500000,
+    "csr_utilized_total": 1850000,
+    "students_compensated": 1247,
+    "active_internships": 84,
+    "exploitation_prevented": 1849914,
+    "active_companies": 156
+  }
+}

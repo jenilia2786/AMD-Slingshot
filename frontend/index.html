@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AccelerateAI - Internship Intelligence Engine</title>
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="icon" href="assets/tn-logo.png" type="image/png">
+  <style>
+    /* Format 1: Solid Pill Label */
+    .format-1 {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    /* Format 2: Transparent Pill Label */
+    .format-2 {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #FCD34D;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    /* Dark background for Format 2 on white background to keep it visible */
+    .format-2.dark-text {
+      background: rgba(30, 64, 175, 0.08);
+      border: 1px solid rgba(30, 64, 175, 0.2);
+      color: #1E40AF;
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .hero-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      text-align: center;
+      padding: 80px 20px 40px;
+      z-index: 10;
+      gap: 32px;
+    }
+
+    .login-row {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .login-row .portal-card {
+      flex: 1;
+      min-width: 280px;
+      max-width: 350px;
+    }
+
+    .performance-tag {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 8px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-highlights {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      margin: 32px 0;
+      flex-wrap: wrap;
+    }
+
+    .hero-highlights span {
+      font-size: 15px;
+      font-weight: 600;
+      color: #FCD34D;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-caption {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+  </style>
+</head>
+
+<body class="theme-student">
+
+  <!-- HERO -->
+  <section class="hero">
+    <canvas id="particles" class="hero-canvas"></canvas>
+    <nav class="navbar">
+      <div class="nav-logo">
+        <div class="logo-icon">🚀</div>
+        <div>
+          <div class="nav-logo-text">AccelerateAI</div>
+          <div class="nav-logo-sub">Internship Intelligence Engine</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#" class="nav-link-top">Home</a>
+        <a href="#features" class="nav-link-top">Features</a>
+        <a href="#how" class="nav-link-top">How it Works</a>
+        <a href="#why" class="nav-link-top">Why Us</a>
+        <a href="login.html" class="nav-link-top"
+          style="color: white; background: rgba(255,255,255,0.2); padding: 8px 20px; border-radius: 8px; margin-left: 10px;">Login</a>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <div style="display: flex; flex-direction: column; gap: 24px; align-items: center;">
+        <div class="format-2"
+          style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #FCD34D; font-weight: 800; margin-bottom: 0;">
+          AccelerateAI – Internship Intelligence Engine
+        </div>
+        <h1 class="hero-title" style="margin: 0; font-size: clamp(36px, 5vw, 64px);">AI-Powered Internship
+          <span>Evaluation at Scale</span>
+        </h1>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <p class="hero-subtitle" style="font-size: 24px; font-weight: 700; color: white; margin-bottom: 0;">
+          GPU-Accelerated, Bias-Free, CSR-Backed Internship Infrastructure
+        </p>
+        <p class="performance-tag" style="margin-top: 0;">
+          Optimized for AMD EPYC™ multi-core processors and Radeon™ GPU acceleration.
+        </p>
+      </div>
+
+      <div class="hero-highlights" style="margin: 0;">
+        <span>⚡ AI Task Scoring (0–100 Structured Evaluation)</span>
+        <span>⚡ Parallel Multi-Core Processing</span>
+        <span>⚡ Secure CSR Escrow Payments</span>
+        <span>⚡ Real-Time Audit & Compliance Dashboard</span>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <p class="btn-caption">Choose Your Role to Experience the System</p>
+        <div class="hero-buttons">
+          <a href="student/login.html" class="hero-btn student-btn">👨‍🎓 I'm a Student <span>→</span></a>
+          <a href="company/login.html" class="hero-btn company-btn">🏢 I'm a Company <span>→</span></a>
+          <a href="government/login.html" class="hero-btn gov-btn">🏛️ Governance Node <span>→</span></a>
+          <a href="mentor/login.html" class="hero-btn mentor-btn">👨‍🏫 I'm a Mentor <span>→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEY FEATURES SECTION -->
+  <section class="section features-box" id="features" style="background: white; border-bottom: 1px solid #f1f5f9;">
+    <div style="text-align:center;max-width:800px;margin:0 auto 48px;">
+      <div class="format-1" style="background: #E0E7FF; color: #1D4ED8;">✨ Key Features</div>
+      <br>
+      <p class="section-subheading strong-subheading">
+        Scale Your Startup with AI-Verified Talent
+      </p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">💸</div>
+        <h3>Secure Rule-Based Rewards</h3>
+        <p>Talent receives instant rewards powered by secure venture pools regardless of hiring outcome.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>AI-Fair Assessment</h3>
+        <p>Bias-free evaluation using multi-agent CrewAI systems focused solely on technical output.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>Scalable Infrastructure</h3>
+        <p>Deployed on high-performance cloud nodes designed to handle global talent traffic at scale.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>Secure AI-Ledger</h3>
+        <p>Immutable ledger records every evaluation and payment, ensuring total transparency.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECHNICAL ARCHITECTURE SECTION -->
+  <section class="section architecture-section" id="architecture"
+    style="background: #f8fafc; border-bottom: 1px solid #f1f5f9;">
+    <div style="text-align:center;max-width:800px;margin:0 auto 48px;">
+      <div class="format-1" style="background: #FEF3C7; color: #92400E;">🛠️ Project Submission Architecture</div>
+      <br>
+      <p class="section-subheading strong-subheading">
+        Engineered for High Performance & Fair Evaluation
+      </p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>FastAPI Backend</h3>
+        <p>Asynchronous, high-concurrency API layer handles real-time talent data and payment orchestration.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>CrewAI Orchestration</h3>
+        <p>Multi-agent architecture where distinct agents handle code review, bias checking, and skill mapping.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🍃</div>
+        <h3>MongoDB Atlas</h3>
+        <p>Cloud-native document storage for flexible talent profiles and immutable audit trails.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔌</div>
+        <h3>Local LLM Support</h3>
+        <p>Configured for local model execution via Ollama, ensuring data privacy and cost-efficiency.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS SECTION -->
+  <section class="section how-section" id="how" style="background: white; border-bottom: 1px solid #f1f5f9;">
+    <div
+      style="text-align:center; max-width:1000px; margin:0 auto 56px; display: flex; flex-direction: column; align-items: center;">
+      <div class="format-1" style="background: #FDF2F2; color: #991B1B;">🔄 How It Works</div>
+      <p class="section-subheading strong-subheading" style="margin-top: 24px; margin-bottom: 0;">
+        A high-speed, AI-powered pipeline that evaluates and rewards global talent with zero friction.
+      </p>
+    </div>
+    <div class="steps-container">
+      <div class="steps-connector"></div>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-icon-wrap">💼</div>
+        <h3>Startup Challenges</h3>
+        <p>Verified startups deploy evaluation tasks with rule-based reward pools.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-icon-wrap">💻</div>
+        <h3>Talent Submission</h3>
+        <p>Global talent submits solutions to technical challenges on the Slingshot platform.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-icon-wrap">🤖</div>
+        <h3>AI Evaluates Fairly</h3>
+        <p>Multi-agent CrewAI system evaluates code quality, originality, and skill match without bias</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-icon-wrap">💳</div>
+        <h3>Instant Rewards</h3>
+        <p>Platform micro-payments are released instantly to talent wallets based on evaluation metrics.</p>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- WHY CHOOSE US SECTION -->
+  <section class="section why-section" id="why" style="background: #F8FAFC;">
+    <div
+      style="text-align:center; max-width:1000px; margin:0 auto 56px; display: flex; flex-direction: column; align-items: center;">
+      <div class="format-1" style="background: #FEF3C7; color: #92400E;">🎯 Why to Choose Us</div>
+      <p class="section-subheading strong-subheading" style="margin-top: 24px; margin-bottom: 0;">
+        An innovation-driven platform designed for the future of AI-powered work.
+      </p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#EFF6FF;">�</div>
+        <h3>AI-Audited Transparency</h3>
+        <p>Every evaluation and reward is logged on an immutable ledger for enterprise-grade auditability.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#ECFDF5;">⚖️</div>
+        <h3>AI Bias-Free Evaluation</h3>
+        <p>CrewAI multi-agent system evaluates only skills and code quality, blind to college name or gender.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#F0FDF4;">�️</div>
+        <h3>Enterprise Grade</h3>
+        <p>Integrated with industry-standard SSO and verified professional identity systems.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#FFFBEB;">🚀</div>
+        <h3>Startup Friendly</h3>
+        <p>Even small startups can participate with minimal CSR requirements. CSR credits for participation.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#FEF2F2;">💰</div>
+        <h3>Guaranteed Payment</h3>
+        <p>Reward pools locked in escrow before task starts. Students get paid even if not hired.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#F5F3FF;">📋</div>
+        <h3>Stipend Disclosed Upfront</h3>
+        <p>Companies must disclose internship stipend before posting. Zero hidden information policy.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#FFF7ED;">🎯</div>
+        <h3>AI Readiness Index</h3>
+        <p>Get a platform-verified AI skill score based on actual output and project performance.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#F0FDFA;">📈</div>
+        <h3>Career Growth Pipeline</h3>
+        <p>Top performers are directly recommended to partner corporations for full-time job roles.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section scope-section" id="scope" style="background: white; border-bottom: 1px solid #f1f5f9;">
+    <div style="text-align:center;max-width:800px;margin:0 auto 48px;">
+      <div class="format-1" style="background: #D1FAE5; color: #065F46;">📂 Submission Scope</div>
+      <br>
+      <p class="section-subheading strong-subheading" style="margin-top: 24px;">
+        A Comprehensive Solution to Industry Talent Evaluation
+      </p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🏗️</div>
+        <h3>Modular Design</h3>
+        <p>Separated Backend (FastAPI), Frontend (Vanilla JS), and AI Services (CrewAI) for maximum scalability.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Niche Targeting</h3>
+        <p>Specifically designed to solve the 'Junior Talent Gap' by providing pre-verified skill scores.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Market Traction</h3>
+        <p>Simulated data models representing 500+ active startups and 15,000+ talent profiles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI AGENT WORKFLOW -->
+  <section class="section ai-workflow" id="ai-workflow" style="background: #ffffff; border-bottom: 1px solid #f1f5f9;">
+    <div style="text-align:center;max-width:800px;margin:0 auto 48px;">
+      <div class="format-1" style="background: #EDE9FE; color: #5B21B6;">🤖 AI Agent Workflow</div>
+      <br>
+      <p class="section-subheading strong-subheading" style="margin-top: 24px;">
+        Multi-Agent Orchestration for Precision Scoring
+      </p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#F5F3FF;">👩‍💻</div>
+        <h3>The Architect Agent</h3>
+        <p>Analyzes the code structure, design patterns, and overall project organization.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#F5F3FF;">🔍</div>
+        <h3>The Debugger Agent</h3>
+        <p>Identifies potential bugs, security vulnerabilities, and performance bottlenecks.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap" style="background:#F5F3FF;">⚖️</div>
+        <h3>The Ethics Agent</h3>
+        <p>Ensures evaluation neutrality and checks for plagiarism or non-fair play in submissions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATISTICS - LIVE IMPACT -->
+  <section class="section stats-section" id="stats">
+    <div style="text-align:center;margin-bottom:64px;">
+      <div class="format-2 dark-text">📊 Live Impact</div>
+      <h2 class="section-heading" style="margin-top: 16px;">
+        Real
+        Numbers, Real Impact</h2>
+      <p style="font-size:17px;color:#64748B;margin-top:12px;">Global platform performance metrics</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number" data-target="5000000" data-prefix="$">$0</div>
+        <div class="stat-name">Venture Rewards Paid</div>
+        <div class="stat-subtext">to global talent</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="15400">0</div>
+        <div class="stat-name">Talent Rewarded</div>
+        <div class="stat-subtext">across 120 countries</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="420">0</div>
+        <div class="stat-name">Partner Startups</div>
+        <div class="stat-subtext">growing with Slingshot</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="85">0</div>
+        <div class="stat-name">Hiring Efficiency</div>
+        <div class="stat-subtext">⭐ Market Impact Metric</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- READY TO TRANSFORM SECTION -->
+  <section class="section" style="background:linear-gradient(135deg,#1E40AF,#059669);text-align:center;">
+    <div class="format-2">Ready to Transform</div>
+    <h2
+      style="font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,52px);font-weight:800;color:white;margin-bottom:48px; margin-top: 16px;">
+      Join the Future of AI-Powered Hiring</h2>
+
+    <div class="login-row">
+      <!-- Student -->
+      <a href="student/login.html" class="portal-card student">
+        <div class="portal-icon">👨‍🎓</div>
+        <h3>Student</h3>
+        <p>Apply for fair internships, complete AI-assessed tasks, and earn CSR-powered stipends.</p>
+      </a>
+
+      <!-- Company -->
+      <a href="company/login.html" class="portal-card company">
+        <div class="portal-icon">🏢</div>
+        <h3>Company</h3>
+        <p>Post evaluation tasks, discover top talent biased-free, and manage CSR internship funds.</p>
+      </a>
+
+      <!-- Mentor -->
+      <a href="mentor/login.html" class="portal-card mentor">
+        <div class="portal-icon">👨‍🏫</div>
+        <h3>Mentor</h3>
+        <p>Guide global talent, provide expert reviews, and earn honorariums from venture reward pools.</p>
+      </a>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <!--<footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="brand-name"><img src="assets/tn-logo.png"
+            style="height: 24px; vertical-align: middle; margin-right: 8px;"> AccelerateAI</div>
+        <div class="brand-sub">AI-Powered Fair Internship Ecosystem</div>
+      </div>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+      <div class="footer-gov">
+        🏛️ Integrated with slingshot.amd.com
+      </div>
+    </div>
+  </footer>-->
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container"></div>
+
+  <script>
+    // Particle animation
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    for (let i = 0; i < 80; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2 + 0.5,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5,
+        alpha: Math.random() * 0.5 + 0.1
+      });
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+        ctx.fill();
+        p.x += p.dx; p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      });
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.why-card, .feature-card, .stat-item, .portal-card, .step').forEach(el => {
+      el.classList.add('reveal-anim');
+      observer.observe(el);
+    });
+
+    // Counter animation
+    function formatNumber(n, prefix) {
+      if (n >= 100000) return (prefix || '') + (n / 100000).toFixed(0) + ' L';
+      if (n >= 1000) return (prefix || '') + (n / 1000).toFixed(0) + 'K';
+      return (prefix || '') + n.toLocaleString('en-US');
+    }
+
+    function animateCounter(el, target, prefix) {
+      let start = 0;
+      const duration = 2500;
+      const startTime = performance.now();
+      function update(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(eased * target);
+        el.textContent = formatNumber(current, prefix);
+        if (progress < 1) requestAnimationFrame(update);
+        else el.textContent = formatNumber(target, prefix);
+      }
+      requestAnimationFrame(update);
+    }
+
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          document.querySelectorAll('.stat-number[data-target]').forEach(el => {
+            const target = parseInt(el.dataset.target);
+            const prefix = el.dataset.prefix || '';
+            animateCounter(el, target, prefix);
+            delete el.dataset.target;
+          });
+          statsObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    statsObserver.observe(document.querySelector('.stats-section'));
+  </script>
+</body>
+
+</html>

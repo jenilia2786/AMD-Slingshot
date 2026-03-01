@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallet - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+</head>
+
+<body class="theme-student">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="tasks.html" class="nav-item">📋 Browse Tasks</a>
+        <a href="mentors.html" class="nav-item">🎓 Find Mentor</a>
+        <a href="submit-task.html" class="nav-item">📤 My Submissions</a>
+        <a href="wallet.html" class="nav-item active">💰 Wallet</a>
+        <a href="messages.html" class="nav-item">💬 Messaging</a>
+        <a href="profile.html" class="nav-item">👤 Profile</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">S</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Student</div>
+            <div class="user-role">Intern</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-title">My Wallet</div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="showWithdrawModal()">💳 Withdraw Funds</button>
+        </div>
+      </div>
+
+      <div class="page-content page-fade">
+        <!-- WALLET BALANCE CARD -->
+        <div class="wallet-summary-card"
+          style="background: linear-gradient(135deg, #1e3a8a, #2563eb); border-radius: 20px; padding: 40px; color: white; margin-bottom: 28px; position: relative; overflow: hidden; box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2);">
+          <div
+            style="position:absolute;top:-30px;right:-30px;width:200px;height:200px;background:rgba(255,255,255,0.05);border-radius:50%;">
+          </div>
+          <div
+            style="position:absolute;bottom:-50px;left:-20px;width:150px;height:150px;background:rgba(255,255,255,0.03);border-radius:50%;">
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div
+                style="font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                💰 Available Balance</div>
+              <div style="font-size: 56px; font-weight: 800; font-family: 'Syne', sans-serif; margin-bottom: 4px;"
+                id="balanceDisplay">$23,872</div>
+              <div style="font-size: 13px; opacity: 0.8;">Amount successfully credited & ready for withdrawal</div>
+            </div>
+            <div style="text-align: right;">
+              <div
+                style="font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                ⏳ Yet to Come</div>
+              <div style="font-size: 32px; font-weight: 700;" id="pendingAmt">$3,457</div>
+              <div style="font-size: 13px; opacity: 0.8;">In evaluation or escrow</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:16px;margin-top:32px;flex-wrap:wrap;">
+            <div
+              style="background:rgba(255,255,255,0.15);padding:14px 24px;border-radius:12px;backdrop-filter: blur(10px);border: 1px solid rgba(255,255,255,0.1);">
+              <div style="font-size:20px;font-weight:700;" id="totalEarned">$27,329</div>
+              <div style="font-size:12px;opacity:0.8;font-weight:500;">Lifetime Earnings</div>
+            </div>
+            <div
+              style="background:rgba(255,255,255,0.15);padding:14px 24px;border-radius:12px;backdrop-filter: blur(10px);border: 1px solid rgba(255,255,255,0.1);">
+              <div style="font-size:20px;font-weight:700;" id="totalWithdrawn">$3,457</div>
+              <div style="font-size:12px;opacity:0.8;font-weight:500;">Total Withdrawn</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILTERS + TABLE -->
+        <div class="card-flat">
+          <div
+            style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+            <h3 style="font-size:18px;font-weight:800;">Transaction History</h3>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <select class="form-control" style="width:auto;" id="txnFilter" onchange="filterTransactions()">
+                <option value="">All Transactions</option>
+                <option value="reward">Rewards</option>
+                <option value="withdrawal">Withdrawals</option>
+              </select>
+              <button class="btn btn-outline btn-sm" onclick="downloadCSV()">📥 Export CSV</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table id="txnTable">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Company</th>
+                  <th>Amount</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Transaction ID</th>
+                </tr>
+              </thead>
+              <tbody id="txnBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    let currentTransactions = [];
+    let currentBalance = 0;
+
+    async function init() {
+      const user = getUser();
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      try {
+        const profile = await apiCall('/student/profile');
+        const walletData = await apiCall('/student/wallet');
+
+        document.getElementById('userName').textContent = profile.profile?.name || user.name || 'Student';
+        currentBalance = walletData.balance || 0;
+
+        document.getElementById('balanceDisplay').textContent = '$' + currentBalance.toLocaleString('en-US');
+        document.getElementById('totalEarned').textContent = '$' + (walletData.total_earned || 0).toLocaleString('en-US');
+        document.getElementById('totalWithdrawn').textContent = '$' + (walletData.total_withdrawn || 0).toLocaleString('en-US');
+        document.getElementById('pendingAmt').textContent = '$' + (walletData.pending_evaluations_value || 0).toLocaleString('en-US');
+
+        currentTransactions = walletData.transactions || [];
+        renderTransactions(currentTransactions);
+      } catch (err) {
+        showToast('Error loading wallet: ' + err.message, 'error');
+      }
+    }
+
+    function filterTransactions() {
+      const type = document.getElementById('txnFilter').value;
+      let filtered = currentTransactions;
+      if (type === 'reward') {
+        filtered = currentTransactions.filter(t => t.type === 'reward_payment');
+      } else if (type === 'withdrawal') {
+        filtered = currentTransactions.filter(t => t.type === 'withdrawal');
+      }
+      renderTransactions(filtered);
+    }
+
+    function renderTransactions(txns) {
+      document.getElementById('txnBody').innerHTML = txns.map(t => {
+        const isCredit = t.type === 'reward_payment' || t.amount > 0;
+        return `
+          <tr>
+            <td style="font-size:13px;">${new Date(t.timestamp).toLocaleDateString()}</td>
+            <td style="font-weight:600;font-size:14px;">${t.type.replace('_', ' ')} ${t.task_id ? '- ' + t.task_id : ''}</td>
+            <td style="font-size:13px;color:#6B7280;">${t.from_entity?.name || t.to_entity?.name || '-'}</td>
+            <td style="font-weight:800;font-size:15px;color:${isCredit ? '#059669' : '#DC2626'};">
+              ${isCredit ? '+' : '-'}$${Math.abs(t.amount).toLocaleString('en-US')}
+            </td>
+            <td><span class="badge ${isCredit ? 'badge-green' : 'badge-blue'}">${t.type.split('_')[0]}</span></td>
+            <td><span class="status-completed">${t.status || 'completed'}</span></td>
+            <td style="font-family:'Courier New',monospace;font-size:12px;color:#9CA3AF;">${t._id || 'N/A'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function showWithdrawModal() {
+      const content = `
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="font-size:14px;color:#6B7280;">Available Balance</div>
+          <div style="font-size:40px;font-weight:800;color:#059669;margin:8px 0;">$${currentBalance.toLocaleString('en-US')}</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">UPI ID / Bank Detail</label>
+          <input type="text" class="form-control" id="targetAccount" placeholder="yourname@upi or Account No">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount ($)</label>
+          <input type="number" class="form-control" id="withdrawAmt" max="${currentBalance}" placeholder="Enter amount" value="${currentBalance}">
+        </div>
+        <div style="background:#EFF6FF;padding:12px;border-radius:8px;font-size:13px;color:#1E40AF;margin-bottom:20px;">
+          ℹ️ Withdrawal processed within 24 hours. No transaction fees.
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="processWithdrawal()">💳 Withdraw Now</button>
+      `;
+      openModal(content, '💰 Withdraw Funds');
+    }
+
+    async function processWithdrawal() {
+      const target = document.getElementById('targetAccount')?.value;
+      const amt = parseInt(document.getElementById('withdrawAmt')?.value);
+      if (!target) { showToast('Please enter target account/UPI', 'warning'); return; }
+      if (!amt || amt <= 0) { showToast('Enter valid amount', 'warning'); return; }
+      if (amt > currentBalance) { showToast('Insufficient balance', 'error'); return; }
+
+      try {
+        showLoader('Processing withdrawal...');
+        const res = await apiCall(`/student/wallet/withdraw?amount=${amt}&upi_id=${encodeURIComponent(target)}`, 'POST');
+
+        hideLoader();
+        document.querySelector('.modal-overlay')?.remove();
+        showToast(`$${amt.toLocaleString('en-US')} withdrawal initiated! ${res.transaction_id || ''} ✅`, 'success');
+
+        // Refresh data
+        init();
+      } catch (err) {
+        hideLoader();
+        showToast('Withdrawal failed: ' + err.message, 'error');
+      }
+    }
+
+    function downloadCSV() {
+      if (!currentTransactions.length) { showToast('No transactions to export', 'info'); return; }
+      const rows = [['Date', 'Description', 'Entity', 'Amount', 'Type', 'Status', 'ID']];
+      currentTransactions.forEach(t => {
+        const date = new Date(t.timestamp).toLocaleDateString();
+        const desc = t.type;
+        const entity = t.from_entity?.name || t.to_entity?.name || '-';
+        rows.push([date, desc, entity, t.amount, t.type, t.status, t._id]);
+      });
+      const csv = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `tn_internfair_wallet_${new Date().getTime()}.csv`;
+      a.click();
+      showToast('CSV downloaded successfully!', 'success');
+    }
+
+    init();
+  </script>
+
+
+</body>
+
+</html>

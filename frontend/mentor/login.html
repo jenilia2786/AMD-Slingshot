@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Login - AccelerateAI</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0F172A 0%, var(--primary) 60%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-wrap {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 44px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-logo h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1F2937;
+        }
+
+        .login-logo p {
+            font-size: 14px;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #E5E7EB;
+            padding-bottom: 12px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #6B7280;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: -13px;
+        }
+
+        .verification-step {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .verification-step.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .step-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #E0E7FF;
+            color: #4F46E5;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        .verified-badge {
+            color: #059669;
+            background: #ECFDF5;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .creds-hint {
+            background: #EEF2FF;
+            border: 1px solid #C7D2FE;
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #3730A3;
+        }
+    </style>
+</head>
+
+<body class="theme-mentor">
+    <div class="login-wrap">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="../assets/tn-logo.png" style="height: 60px; margin-bottom: 16px;">
+                <h1>Mentor Portal</h1>
+                <p>Verified Industry Professional & Internship Guide</p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('login')">Login</div>
+                <div class="tab" onclick="switchTab('signup')">New Registration</div>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <div id="loginSection">
+                <div class="form-group">
+                    <label class="form-label">Corporate Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="mentor@techcorp.com"
+                        value="mentor1@techcorp.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" value="mentor123">
+                </div>
+                <button class="btn btn-primary btn-lg" onclick="doLogin()" style="width:100%;justify-content:center;">
+                    Login to Mentor Dashboard →
+                </button>
+
+                <div class="creds-hint">
+                    <strong>🧪 Test Credentials</strong>
+                    mentor1@techcorp.com / mentor123<br>
+                    mentor2@startupx.com / mentor123
+                </div>
+            </div>
+
+            <!-- SIGNUP / VERIFICATION SIMULATION -->
+            <div id="signupSection" style="display:none;">
+                <div id="signupStep1">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" placeholder="e.g. Rajesh Kumar">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Domain Expertise</label>
+                        <select class="form-control">
+                            <option>AI & Machine Learning</option>
+                            <option>Full Stack Web Dev</option>
+                            <option>Cloud Computing (AWS/GCP)</option>
+                            <option>Mobile App Dev</option>
+                            <option>Cybersecurity</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Linked Corporate Email</label>
+                        <input type="email" id="corpEmail" class="form-control" placeholder="name@company.com">
+                        <p style="font-size:11px;color:#9CA3AF;margin-top:4px;">⚠ Gmail/Yahoo not allowed. Only
+                            corporate domains.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="nextStep(2)"
+                        style="width:100%;justify-content:center;">Send Verification OTP</button>
+                </div>
+
+                <div id="signupStep2" style="display:none;" class="verification-step">
+                    <div class="step-badge">Step 1: Email Verification</div>
+                    <p style="font-size:14px;margin-bottom:16px;">An OTP has been sent to your corporate email. Enter it
+                        below to link your company.</p>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="6-digit OTP"
+                            style="text-align:center;letter-spacing:4px;font-size:18px;">
+                    </div>
+                    <button class="btn btn-primary" onclick="nextStep(3)"
+                        style="width:100%;justify-content:center;">Verify & Link Company</button>
+                </div>
+
+                <div id="signupStep3" style="display:none;" class="verification-step">
+                    <div class="step-badge">Step 2: LinkedIn Verification</div>
+                    <div class="verified-badge">✔ Company Email Verified</div>
+                    <p style="font-size:14px;margin-bottom:16px;">Please provide your LinkedIn profile URL for
+                        professional validation. Admin will review within 24h.</p>
+                    <div class="form-group">
+                        <label class="form-label">LinkedIn Profile URL</label>
+                        <input type="text" id="regLinkedIn" class="form-control"
+                            placeholder="linkedin.com/in/yourprofile">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Years of Experience</label>
+                        <input type="number" id="regExp" class="form-control" placeholder="5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Set Password</label>
+                        <input type="password" id="regPass" class="form-control" placeholder="••••••••">
+                    </div>
+                    <button class="btn btn-primary" onclick="finishSignup()"
+                        style="width:100%;justify-content:center;">Complete Application</button>
+                </div>
+
+                <div id="signupFinal" style="display:none;" class="verification-step">
+                    <div class="verified-badge" style="background:#4F46E5;color:white;">✔ Mentor Account Created</div>
+                    <h3 style="margin-bottom:8px;">Congratulations!</h3>
+                    <p style="font-size:14px;color:#6B7280;margin-bottom:20px;">Your corporate email is verified. Your
+                        LinkedIn profile is under review. You can now login with your temporary credentials sent to your
+                        email.</p>
+                    <button class="btn btn-outline" onclick="switchTab('login')"
+                        style="width:100%;justify-content:center;">Go to Login</button>
+                </div>
+            </div>
+
+            <div class="back-link" style="text-align:center;margin-top:24px;font-size:14px;color:#6B7280;">
+                <a href="../index.html">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            if (tab === 'login') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('signupSection').style.display = 'none';
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('signupSection').style.display = 'block';
+            }
+        }
+
+        function nextStep(step) {
+            if (step === 2) {
+                const email = document.getElementById('corpEmail').value;
+                if (!email.includes('@') || email.endsWith('gmail.com') || email.endsWith('yahoo.com')) {
+                    showToast('Please use a corporate email address (no Gmail/Yahoo)', 'warning');
+                    return;
+                }
+                showLoader('Sending OTP...');
+                setTimeout(() => {
+                    hideLoader();
+                    document.getElementById('signupStep1').style.display = 'none';
+                    document.getElementById('signupStep2').classList.add('active');
+                    showToast('OTP sent successfully!', 'success');
+                }, 1000);
+            } else if (step === 3) {
+                showLoader('Verifying OTP...');
+                setTimeout(() => {
+                    hideLoader();
+                    document.getElementById('signupStep2').classList.remove('active');
+                    document.getElementById('signupStep2').style.display = 'none';
+                    document.getElementById('signupStep3').classList.add('active');
+                    showToast('Email verified and company linked!', 'success');
+                }, 100);
+            }
+        }
+
+        async function finishSignup() {
+            const name = document.querySelector('#signupStep1 input[type="text"]').value.trim();
+            const domain = document.querySelector('#signupStep1 select').value;
+            const email = document.getElementById('corpEmail').value.trim();
+            const linkedin = document.getElementById('regLinkedIn').value.trim();
+            const exp = document.getElementById('regExp').value;
+            const pass = document.getElementById('regPass').value;
+
+            if (!name || !email || !pass || !linkedin) { showToast('Please fill all fields', 'warning'); return; }
+
+            try {
+                showLoader('Submitting application...');
+                await apiCall('/auth/register/mentor', 'POST', {
+                    name,
+                    email,
+                    password: pass,
+                    linkedin_url: linkedin,
+                    company_email: email,
+                    experience_years: parseInt(exp),
+                    domain
+                });
+                hideLoader();
+                document.getElementById('signupStep3').classList.remove('active');
+                document.getElementById('signupStep3').style.display = 'none';
+                document.getElementById('signupFinal').classList.add('active');
+                showToast('Registration successful!', 'success');
+            } catch (err) {
+                hideLoader();
+                showToast('Registration failed: ' + err.message, 'error');
+            }
+        }
+
+        function doLogin() {
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
+            if (!email || !pass) { showToast('Please enter credentials', 'warning'); return; }
+            handleLogin(email, pass, 'mentor');
+        }
+    </script>
+</body>
+
+</html>

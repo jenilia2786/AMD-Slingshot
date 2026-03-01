@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Government Login - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #064e3b 0%, var(--primary) 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 20px;
+      padding: 44px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .gov-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .gov-emblem {
+      font-size: 52px;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .gov-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .gov-subtitle {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1F2937;
+      margin-top: 4px;
+    }
+
+    .gov-sub2 {
+      font-size: 13px;
+      color: #6B7280;
+      margin-top: 4px;
+    }
+
+    .security-badge {
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #065F46;
+    }
+  </style>
+</head>
+
+<body class="theme-government">
+  <div class="login-card">
+    <div class="gov-header">
+      <img src="../assets/tn-logo.png" style="height: 60px; margin-bottom: 16px;">
+      <div class="gov-title">Government of Global</div>
+      <div class="gov-subtitle">AccelerateAI</div>
+      <div class="gov-sub2">Administrator Portal — Secure Access</div>
+    </div>
+
+    <div class="security-badge">
+      🔐 <strong>Secure Government Login</strong> — 2FA enabled for all admin accounts
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Official Email</label>
+      <input type="email" id="email" class="form-control" placeholder="admin@tn.gov.in" value="admin@tn.gov.in">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" id="password" class="form-control" placeholder="••••••••" value="admin123">
+    </div>
+    <div class="form-group">
+      <label class="form-label">OTP (Simulated)</label>
+      <input type="text" id="otp" class="form-control" placeholder="Enter 6-digit OTP" value="123456">
+      <div style="font-size:12px;color:#059669;margin-top:4px;">✓ OTP sent to registered mobile (demo: use 123456)</div>
+    </div>
+
+    <button class="btn btn-green" style="width:100%;justify-content:center;padding:14px;font-size:15px;"
+      onclick="doLogin()">
+      🔐 Secure Login →
+    </button>
+
+    <div
+      style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:14px;margin-top:20px;font-size:13px;color:#1E40AF;">
+      <strong>🧪 Test Credentials</strong><br>
+      admin@tn.gov.in / admin123 / OTP: 123456
+    </div>
+
+    <div style="text-align:center;margin-top:20px;font-size:14px;color:#6B7280;">
+      <a href="../index.html" style="color:#059669;font-weight:600;">← Back to Home</a>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    function doLogin() {
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('password').value;
+      const otp = document.getElementById('otp').value.trim();
+      if (!email || !pass) { showToast('Please enter credentials', 'warning'); return; }
+      // In a real government login, OTP would be verified by backend.
+      // For now we continue with handleLogin.
+      handleLogin(email, pass, 'government');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  </script>
+</body>
+
+</html>

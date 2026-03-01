@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intern Progress Review - AccelerateAI</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="theme-mentor">
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+                <a href="dashboard.html#requests" class="nav-item" id="reqLink">📩 Requests <span id="reqCount"
+                        class="badge-pill"
+                        style="background: var(--accent); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto;">0</span></a>
+                <a href="messages.html" class="nav-item">💬 Messaging</a>
+                <a href="wallet.html" class="nav-item">💰 Wallet</a>
+                <a href="#" class="nav-item">🚩 Report Misuse</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="avatarDisplay">M</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Mentor</div>
+                        <div class="user-role">Industry Expert</div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <div class="topbar">
+                <div class="topbar-title" id="internHeader">Intern Review: Ashwin Kumar T</div>
+                <div class="topbar-actions">
+                    <div class="badge badge-primary">ID: STU001</div>
+                    <button class="btn btn-primary btn-sm" onclick="saveReview()">💾 Save Review</button>
+                </div>
+            </div>
+
+            <div class="page-content page-fade">
+                <!-- PROGRESS SUMMARY -->
+                <div id="scores" class="grid-4" style="margin-bottom:28px;">
+                    <div class="stat-card">
+                        <div class="stat-label">AI Task Score</div>
+                        <div class="stat-value">82%</div>
+                        <div style="font-size:11px;color:#9CA3AF;">⚠ Mentor cannot edit AI score</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-label">Resume Match</div>
+                        <div class="stat-value">78%</div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-label">Plagiarism Score</div>
+                        <div class="stat-value">12%</div>
+                        <div style="font-size:11px;color:#DC2626;">Low - Good</div>
+                    </div>
+                    <div class="stat-card primary">
+                        <div class="stat-label">Trust Index</div>
+                        <div class="stat-value">94/100</div>
+                    </div>
+                </div>
+
+                <div class="grid-2" style="gap:24px;margin-bottom:28px;">
+                    <div class="card-flat">
+                        <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;">🔍 Skill Gap Summary</h3>
+                        <div style="display:flex;flex-direction:column;gap:12px;">
+                            <div style="padding:10px;background:#F8FAFC;border-radius:8px;">
+                                <div style="font-weight:700;font-size:13px;display:flex;justify-content:space-between;">
+                                    Python Performance <span>High</span></div>
+                                <div style="background:#E5E7EB;height:6px;border-radius:10px;margin-top:4px;">
+                                    <div style="width:85%;height:100%;background:var(--green);border-radius:10px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding:10px;background:#F8FAFC;border-radius:8px;">
+                                <div style="font-weight:700;font-size:13px;display:flex;justify-content:space-between;">
+                                    System Architecture <span>Moderate Gap</span></div>
+                                <div style="background:#E5E7EB;height:6px;border-radius:10px;margin-top:4px;">
+                                    <div style="width:45%;height:100%;background:var(--gold);border-radius:10px;"></div>
+                                </div>
+                            </div>
+                            <div style="padding:10px;background:#F8FAFC;border-radius:8px;">
+                                <div style="font-weight:700;font-size:13px;display:flex;justify-content:space-between;">
+                                    Documentation <span>Met</span></div>
+                                <div style="background:#E5E7EB;height:6px;border-radius:10px;margin-top:4px;">
+                                    <div style="width:72%;height:100%;background:var(--primary);border-radius:10px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-flat" id="feedback">
+                        <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;">📝 Mentor Weekly Feedback</h3>
+                        <div class="form-group">
+                            <label class="form-label">Feedback for Week 4</label>
+                            <textarea class="form-control" placeholder="Add specific guidance here..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Performance Marking</label>
+                            <div style="display:flex;gap:10px;">
+                                <button class="btn btn-sm btn-outline" style="flex:1;">Excellent</button>
+                                <button class="btn btn-sm btn-outline active"
+                                    style="flex:1;background:var(--primary);color:white;">Improving</button>
+                                <button class="btn btn-sm btn-outline" style="flex:1;">Needs Guidance</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMPLETION SECTION -->
+                <div id="completion" class="card-flat"
+                    style="border:2px solid var(--primary-light);background:#EEF2FF;">
+                    <h3 style="font-size:18px;font-weight:800;margin-bottom:12px;color:var(--primary-dark);">🎓
+                        Internship Completion Recommendation</h3>
+                    <p style="font-size:14px;color:#6B7280;margin-bottom:20px;">Your recommendation will be shared with
+                        the company for final certificate issuance and hiring confirmation.</p>
+
+                    <div style="display:flex;gap:20px;">
+                        <button class="btn btn-green" style="flex:1;justify-content:center;" onclick="recommend(true)">✔
+                            Successfully Completed</button>
+                        <button class="btn btn-red" style="flex:1;justify-content:center;" onclick="recommend(false)">✖
+                            Not Recommended</button>
+                    </div>
+                    <p style="font-size:11px;color:#9CA3AF;margin-top:12px;text-align:center;">Note: Mentor
+                        recommendation does not override company decision but is recorded in the CSR audit trace.</p>
+                </div>
+
+                <!-- ACTIVITY LOGS -->
+                <div style="margin-top:32px;">
+                    <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;">🕒 Internship Activity Logs</h3>
+                    <div class="card-flat">
+                        <div class="activity-item">
+                            <div class="activity-dot"></div>
+                            <div><strong>Task Submitted</strong>
+                                <div style="font-size:12px;color:#6B7280;">Feb 22 - Data Pipeline V2</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot"></div>
+                            <div><strong>Weekly Feedback Added</strong>
+                                <div style="font-size:12px;color:#6B7280;">Feb 15 - Good progress on SQL optimization
+                                </div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot"></div>
+                            <div><strong>Skill Score Updated</strong>
+                                <div style="font-size:12px;color:#6B7280;">Feb 08 - AI evaluated logic as 82/100</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        function init() {
+            const user = getUser();
+            if (!user || user.role !== 'mentor') { window.location.href = 'login.html'; return; }
+
+            // Identity
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('avatarDisplay').textContent = (user.name || 'M')[0].toUpperCase();
+
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id === 'STU002') {
+                document.getElementById('internHeader').textContent = 'Intern Review: Priya Dharshini R';
+                // Mock diff data for individual interns
+            }
+        }
+
+        function saveReview() {
+            showLoader('Saving feedback...');
+            setTimeout(() => {
+                hideLoader();
+                showToast('Weekly feedback saved successfully!', 'success');
+            }, 1000);
+        }
+
+        function recommend(success) {
+            const status = success ? 'Success' : 'Failure';
+            if (confirm(`Are you sure you want to mark this internship as ${status}?`)) {
+                showLoader('Processing recommendation...');
+                setTimeout(() => {
+                    hideLoader();
+                    showToast('Recommendation recorded and sent to Company HR.', 'info');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1500);
+                }, 1500);
+            }
+        }
+
+        init();
+    </script>
+    <style>
+        #completion .btn {
+            padding: 16px;
+            font-weight: 800;
+        }
+
+        .btn-outline.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</body>
+
+</html>

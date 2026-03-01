@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Hub - AccelerateAI</title>
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="icon" href="assets/tn-logo.png" type="image/png">
+    <style>
+        .back-home {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .back-home:hover {
+            color: #1e293b;
+            transform: translateX(-5px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-selection-container">
+        <a href="index.html" class="back-home">← Back to Home</a>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="assets/tn-logo.png" alt="TN Logo" style="height: 80px; margin-bottom: 20px;">
+            <h1 style="font-size: 36px; font-weight: 800; color: #1e293b; font-family: 'Syne', sans-serif;">Welcome to
+                TN <span style="color: #1E40AF;">InternFair</span></h1>
+            <p style="color: #64748b; font-size: 18px; margin-top: 10px;">Select your portal to continue</p>
+        </div>
+
+        <div class="login-grid">
+            <!-- Student -->
+            <a href="student/login.html" class="portal-card student">
+                <div class="portal-icon">👨‍🎓</div>
+                <h3>Student</h3>
+                <p>Apply for fair internships, complete AI-assessed tasks, and earn CSR-powered stipends.</p>
+            </a>
+
+            <!-- Company -->
+            <a href="company/login.html" class="portal-card company">
+                <div class="portal-icon">🏢</div>
+                <h3>Company</h3>
+                <p>Post evaluation tasks, discover top talent biased-free, and manage CSR internship funds.</p>
+            </a>
+
+            <!-- Government -->
+            <a href="government/login.html" class="portal-card government">
+                <div class="portal-icon">🏛️</div>
+                <h3>Government</h3>
+                <p>Audit ecosystem transparency, monitor impact metrics, and ensure fair pay for students.</p>
+            </a>
+
+            <!-- Mentor -->
+            <a href="mentor/login.html" class="portal-card mentor">
+                <div class="portal-icon">👨‍🏫</div>
+                <h3>I'm a Mentor</h3>
+                <p>Guide interns as a verified professional and earn CSR-based honorarium for expert reviews.</p>
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

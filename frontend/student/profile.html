@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="theme-student">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="tasks.html" class="nav-item">📋 Browse Tasks</a>
+        <a href="mentors.html" class="nav-item">🎓 Find Mentor</a>
+        <a href="submit-task.html" class="nav-item">📤 My Submissions</a>
+        <a href="wallet.html" class="nav-item">💰 Wallet</a>
+        <a href="messages.html" class="nav-item">💬 Messaging</a>
+        <a href="profile.html" class="nav-item active">👤 Profile</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">S</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Student</div>
+            <div class="user-role">Intern</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-title">My Profile</div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="saveProfile()">💾 Save Changes</button>
+        </div>
+      </div>
+
+      <div class="page-content page-fade">
+        <div class="grid-2" style="gap:24px;align-items:start;">
+          <!-- LEFT COLUMN -->
+          <div>
+            <!-- Profile Card -->
+            <div class="card-flat" style="margin-bottom:24px;">
+              <div style="display:flex;gap:16px;align-items:center;margin-bottom:24px;">
+                <div
+                  style="width:80px;height:80px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:white;"
+                  id="profileAvatar">A</div>
+                <div>
+                  <div style="font-size:22px;font-weight:800;" id="profileName">Loading...</div>
+                  <div style="color:#6B7280;font-size:14px;">🏛️ Slingshot Talent Student</div>
+                  <div style="font-size:12px;color:#9CA3AF;margin-top:2px;" id="profileId">ID: STU001</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="fullName" value="">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email (Slingshot Talent)</label>
+                <input type="email" class="form-control" id="email" value="" readonly
+                  style="background:#F9FAFB;cursor:not-allowed;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Skills (comma separated)</label>
+                <input type="text" class="form-control" id="skills" value="">
+              </div>
+            </div>
+
+            <!-- Resume Upload -->
+            <div class="card-flat" style="margin-bottom:24px;">
+              <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;">📄 Resume Intelligence</h3>
+              <div
+                style="border:2px dashed #E5E7EB;border-radius:10px;padding:28px;text-align:center;cursor:pointer;transition:all 0.3s;"
+                id="resumeDrop" onclick="document.getElementById('resumeFile').click()">
+                <div style="font-size:15px;font-weight:600;">Drop your resume for AI Analysis</div>
+              </div>
+              <input type="file" id="resumeFile" accept=".pdf,.docx" style="display:none;"
+                onchange="analyzeResume(this)">
+              <div id="resumeAnalysis" style="margin-top:16px;display:none;"></div>
+            </div>
+
+            <!-- Project Portfolio -->
+            <div class="card-flat">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="font-size:16px;font-weight:800;">🚀 Project Portfolio (AI Scored)</h3>
+                <button class="btn btn-sm btn-outline" onclick="showAddProject()">+ Add Project</button>
+              </div>
+              <div id="portfolio-list" style="display:flex;flex-direction:column;gap:12px;">
+                <!-- Portfolio items -->
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN -->
+          <div>
+            <!-- AI Role Suggestions -->
+            <div class="card-flat"
+              style="margin-bottom:24px;background:linear-gradient(135deg, #f0f7ff, #ffffff);border:1px solid #bfdbfe;">
+              <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;color:#1e40af;">🎯 AI Role Matcher</h3>
+              <div id="role-suggestions" style="display:flex;flex-wrap:wrap;gap:8px;">
+                <div style="font-size:13px;color:#64748b;">Evaluating your profile...</div>
+              </div>
+            </div>
+
+            <!-- Verified Certifications -->
+            <div class="card-flat" style="margin-bottom:24px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h3 style="font-size:16px;font-weight:800;">🏅 Verified Certifications</h3>
+                <a href="skill-tests.html" class="btn btn-sm btn-primary">Take New Test</a>
+              </div>
+              <div id="certifications-list" style="display:flex;flex-direction:column;gap:12px;">
+                <!-- Certs -->
+              </div>
+            </div>
+
+            <!-- Internship Readiness -->
+            <div class="card-flat">
+              <h3 style="font-size:16px;font-weight:800;margin-bottom:20px;">📊 Market Readiness Index</h3>
+              <div style="display:flex;align-items:center;gap:24px;margin-bottom:24px;">
+                <div id="readinessRing"></div>
+                <div>
+                  <div style="font-size:18px;font-weight:800;color:#1F2937;" id="readinessLabel">Calculating...</div>
+                </div>
+              </div>
+              <canvas id="skillRadar" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    async function init() {
+      const user = getUser();
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      const profileData = await apiCall('/student/profile');
+      const student = profileData.profile;
+
+      document.getElementById('profileName').textContent = student.name || 'Student';
+      document.getElementById('fullName').value = student.name || '';
+      document.getElementById('email').value = student.email || '';
+      document.getElementById('profileId').textContent = 'ID: ' + (student.user_id || 'STU001').substring(0, 8).toUpperCase();
+      document.getElementById('profileAvatar').textContent = (student.name || 'S')[0].toUpperCase();
+      document.getElementById('skills').value = (student.skills || []).join(', ');
+
+      renderReadiness(profileData.readiness_index || 75);
+      renderRadarChart(student);
+
+      fetchPortfolio();
+      fetchCertifications(student);
+      fetchRoleSuggestions();
+    }
+
+    function renderReadiness(score) {
+      document.getElementById('readinessRing').innerHTML = createProgressRing(score, 100, '#1E40AF');
+      document.getElementById('readinessLabel').textContent = score >= 80 ? 'Job Ready' : score >= 60 ? 'Above Average' : 'Needs Improvement';
+    }
+
+    async function fetchPortfolio() {
+      try {
+        const data = await apiCall('/student/portfolio');
+        const list = document.getElementById('portfolio-list');
+        if (!data.portfolio.length) {
+          list.innerHTML = `<div style="font-size:13px;color:#9ca3af;text-align:center;padding:12px;">No projects added yet.</div>`;
+          return;
+        }
+        list.innerHTML = data.portfolio.map(p => `
+          <div style="background:#f8fafc;border-radius:8px;padding:12px;border:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:14px;font-weight:700;">${p.title}</div>
+              <div style="font-size:11px;color:#64748b;margin-top:2px;">${p.type} • ${new Date(p.date).toLocaleDateString()}</div>
+              <div style="display:flex;gap:4px;margin-top:6px;">
+                ${p.skills.slice(0, 3).map(s => `<span style="font-size:10px;background:#dbeafe;color:#1e40af;padding:2px 6px;border-radius:4px;">${s}</span>`).join('')}
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:16px;font-weight:800;color:#1e40af;">${p.score}</div>
+              <div style="font-size:10px;color:#64748b;">AI Score</div>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) { console.error(e); }
+    }
+
+    function fetchCertifications(student) {
+      const list = document.getElementById('certifications-list');
+      const certs = student.certified_scores || [];
+      if (!certs.length) {
+        list.innerHTML = `<div style="font-size:13px;color:#9ca3af;text-align:center;padding:12px;">Take a skill test to get certified.</div>`;
+        return;
+      }
+      list.innerHTML = certs.map(c => `
+        <div style="background:#f0fdf4;border-radius:8px;padding:12px;border:1px solid #bbf7d0;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#166534;">${c.domain} Verified</div>
+            <div style="font-size:11px;color:#15803d;">Date: ${new Date(c.date).toLocaleDateString()}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;">
+            <div style="font-size:16px;font-weight:800;color:#166534;">${c.score}%</div>
+            <span style="font-size:9px;background:#dcfce7;color:#166534;padding:1px 4px;border-radius:4px;border:1px solid #86efac;">${c.integrity}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function fetchRoleSuggestions() {
+      try {
+        const data = await apiCall('/student/role-suggestions');
+        const container = document.getElementById('role-suggestions');
+        container.innerHTML = data.suggested_roles.map(r => `
+          <span style="background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;">✨ ${r}</span>
+        `).join('');
+      } catch (e) { console.error(e); }
+    }
+
+    function renderRadarChart(student) {
+      const ctx = document.getElementById('skillRadar').getContext('2d');
+      const skills = student.skills || [];
+      const labels = ['Core Tech', 'Problem Solving', 'Communication', 'Industry Knowledge', 'Reliability'];
+      const data = [75, 80, student.resume_skills?.length ? 85 : 60, 70, 90];
+
+      new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Your Multi-factor Readiness',
+            data: data,
+            backgroundColor: 'rgba(30, 64, 175, 0.15)',
+            borderColor: '#1E40AF',
+            borderWidth: 2,
+            pointBackgroundColor: '#1E40AF',
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { r: { min: 0, max: 100, ticks: { display: false } } }
+        }
+      });
+    }
+
+    async function analyzeResume(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('file', file);
+      showLoader('AI Career Strategist is analyzing...');
+      try {
+        const result = await apiCall('/student/upload-resume', 'POST', formData);
+        document.getElementById('resumeAnalysis').style.display = 'block';
+        document.getElementById('resumeAnalysis').innerHTML = `
+          <div style="background:#ecfdf5;border:1px solid #a7f3d0;padding:16px;border-radius:10px;">
+            <div style="font-weight:700;color:#059669;">Analysis Complete</div>
+            <div style="font-size:13px;margin-top:8px;">Suggested Improvements:</div>
+            <div style="font-size:12px;color:#065f46;">${result.improvement_suggestions.map(s => `• ${s}`).join('<br>')}</div>
+          </div>
+        `;
+        renderReadiness(result.readiness_index);
+        fetchRoleSuggestions();
+      } catch (err) { alert(err.message); } finally { hideLoader(); }
+    }
+
+    function showAddProject() {
+      // Mock modal for hackathon
+      const title = prompt("Enter Project Title:");
+      const github = prompt("Enter GitHub URL:");
+      if (!title || !github) return;
+
+      apiCall('/student/portfolio/add-project', 'POST', { title, github_url: github })
+        .then(() => { fetchPortfolio(); showToast('Project added!', 'success'); });
+    }
+
+    function saveProfile() {
+      showToast('Profile updated!', 'success');
+    }
+
+    init();
+  </script>
+</body>
+
+</html>

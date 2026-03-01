@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Governance Dashboard - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="theme-government">
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">🚀</div><span>AccelerateAI</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item active">📊 Dashboard</a>
+        <a href="analytics.html" class="nav-item">📈 Analytics</a>
+        <a href="audit.html" class="nav-item">🔗 Audit Logs</a>
+        <a href="analytics.html#companies" class="nav-item">🏢 Companies</a>
+        <a href="analytics.html#bias" class="nav-item">⚖️ Bias Monitor</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">G</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Admin</div>
+            <div class="user-role">Platform Auditor</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-title">Platform Governance</div>
+        <div class="topbar-actions">
+          <div class="role-badge">Governance Node</div>
+          <div class="badge badge-primary"
+            style="background: var(--accent-tint); color: var(--accent); border: 1px solid var(--accent); font-weight: 700;">
+            🟢 Live Oversight — <span id="lastUpdated">loading...</span>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="refreshData()">Refresh Data</button>
+        </div>
+      </header>
+
+      <div class="page-content page-fade">
+        <!-- KEY METRICS -->
+        <div class="grid-4" style="margin-bottom: 32px;">
+          <div class="stat-card">
+            <div class="stat-label">Rewards Allocated Today</div>
+            <div class="stat-value" id="m1">$0</div>
+            <div class="stat-change up" id="m1change">↑ 12% vs yesterday</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Rewards Paid Today</div>
+            <div class="stat-value" id="m2">$0</div>
+            <div class="stat-change up">↑ 8% vs yesterday</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Compensated</div>
+            <div class="stat-value" id="m3">0</div>
+            <div class="stat-change up">↑ 23 today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Internships</div>
+            <div class="stat-value" id="m4">0</div>
+            <div class="stat-change up">↑ 5 this week</div>
+          </div>
+        </div>
+
+        <!-- EXPLOITATION PREVENTED — KEY METRIC -->
+        <div class="card"
+          style="background: linear-gradient(135deg, var(--accent), #064e3b); color: white; border: none; margin-bottom: 32px; overflow: hidden; position: relative;">
+          <div
+            style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: rgba(255, 255, 255, 0.03); border-radius: 50%;">
+          </div>
+          <div
+            style="position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 48px; align-items: center;">
+            <div>
+              <div
+                style="font-size: 11px; font-weight: 700; letter-spacing: 1px; opacity: 0.8; margin-bottom: 12px; text-transform: uppercase;">
+                ⭐ Key Impact Metric</div>
+              <div style="font-size: 42px; font-weight: 800; font-family: 'Syne', sans-serif; color: #fbbf24;"
+                id="exploitPrevented">$0</div>
+              <div style="font-size: 20px; font-weight: 700; margin-top: 4px;">Talent Value Rewarded</div>
+              <p style="font-size: 13px; opacity: 0.7; margin-top: 12px; line-height: 1.5;">Total value of compensated
+                task items for non-hired students that would have otherwise been unpaid work.</p>
+            </div>
+
+            <div
+              style="background: rgba(255, 255, 255, 0.06); padding: 24px; border-radius: 16px; backdrop-filter: blur(4px);">
+              <div style="font-size: 13px; font-weight: 700; margin-bottom: 16px; opacity: 0.9;">📐 Formula Breakdown
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px;"><span
+                    style="opacity: 0.7;">Non-hired Compensated:</span><strong id="nonHired">0</strong></div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;"><span
+                    style="opacity: 0.7;">Avg Tasks Refined:</span><strong>1.8</strong></div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px;"><span
+                    style="opacity: 0.7;">Avg Reward Release:</span><strong>$87</strong></div>
+              </div>
+            </div>
+
+            <div style="text-align: right;">
+              <div style="font-size: 13px; font-weight: 700; opacity: 0.8; margin-bottom: 8px;">MENTOR LAYER STATUS
+              </div>
+              <div
+                style="background: var(--accent); color: white; display: inline-block; padding: 6px 14px; border-radius: 30px; font-size: 12px; font-weight: 800;">
+                ACTIVE & VERIFIED</div>
+              <div style="margin-top: 20px;">
+                <div style="font-size: 11px; opacity: 0.7; margin-bottom: 4px;">CURATED EXPOSURE</div>
+                <div style="font-size: 24px; font-weight: 800;">98.4%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 32px; gap: 32px;">
+          <div class="card">
+            <h3 class="section-title" style="margin-bottom: 24px;">📈 Reward Allocation Trend</h3>
+            <canvas id="trendChart" height="200"></canvas>
+          </div>
+          <div class="card">
+            <h3 class="section-title" style="margin-bottom: 24px;">🏢 Company Participation</h3>
+            <canvas id="companyChart" height="200"></canvas>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 32px; gap: 32px;">
+          <div class="card">
+            <h3 class="section-title" style="margin-bottom: 24px;">👨‍🎓 Compensated Talent by Region</h3>
+            <canvas id="districtChart" height="220"></canvas>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title" style="margin-bottom: 24px;">⚖️ Bias Neutrality Monitor</h3>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <span style="font-weight: 700; font-size: 14px;">College Tier Distribution</span>
+                  <span class="badge badge-green">✓ Balanced</span>
+                </div>
+                <div id="tierBars" style="display: flex; flex-direction: column; gap: 12px;"></div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <span style="font-weight: 700; font-size: 14px;">Gender Neutrality</span>
+                  <span class="badge badge-green">✓ Fair</span>
+                </div>
+                <div id="genderBars" style="display: flex; flex-direction: column; gap: 12px;"></div>
+              </div>
+              <div
+                style="background: var(--accent-tint); color: var(--accent); padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; border: 1px solid var(--accent);">
+                🛡️ AI evaluators are blind to demographic identifiers during the scoring process.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-header" style="margin-bottom: 24px;">
+            <h3 class="section-title">🏢 Startup Reward Pool Oversight</h3>
+            <a href="analytics.html" class="btn btn-outline btn-sm">Full Audit History →</a>
+          </div>
+          <div class="table-wrap">
+            <table style="border: none;">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Type</th>
+                  <th>Hired</th>
+                  <th>Reward Pool</th>
+                  <th>Reserved</th>
+                  <th>Status</th>
+                  <th>Audit Path</th>
+                </tr>
+              </thead>
+              <tbody id="companyTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    let currentCompanies = [];
+
+    async function init() {
+      const user = getUser();
+      if (!user) { window.location.href = 'login.html'; return; }
+      document.getElementById('userName').textContent = (user.name || 'Admin').split(' ')[0];
+
+      try {
+        const analytics = await apiCall('/government/analytics');
+        const companiesRes = await apiCall('/government/companies');
+        currentCompanies = companiesRes.companies || [];
+
+        updateStats(analytics);
+        renderCharts(analytics);
+        renderBias(); // Placeholder for now or fetch if available
+        renderCompanyTable(currentCompanies);
+      } catch (err) {
+        showToast('Error loading g-dashboard: ' + err.message, 'error');
+      }
+
+      // Live clock
+      setInterval(() => {
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString('en-US');
+      }, 1000);
+    }
+
+    function updateStats(data) {
+      const overall = data.overall || {};
+      const parts = data.participants || {};
+
+      animateCounter(document.getElementById('m1'), 0, overall.total_csr_available || 0, 1500, '$');
+      animateCounter(document.getElementById('m2'), 0, overall.total_paid_to_students || 0, 1200, '$');
+      animateCounter(document.getElementById('m3'), 0, parts.compensated_students || 0, 1400);
+      animateCounter(document.getElementById('m4'), 0, parts.active_tasks || 0, 1000);
+      animateCounter(document.getElementById('exploitPrevented'), 0, data.exploitation_prevented_value || 0, 2000, '$');
+
+      document.getElementById('nonHired').textContent = (parts.compensated_students || 0).toLocaleString();
+    }
+
+    function refreshData() {
+      init();
+      showToast('Data refreshed!', 'success');
+    }
+
+    let charts = {};
+
+    function renderCharts(analytics) {
+      // Destroy existing charts if they exist to prevent "Canvas already in use" error
+      if (charts.trend) charts.trend.destroy();
+      if (charts.company) charts.company.destroy();
+      if (charts.district) charts.district.destroy();
+
+      // Trend Chart - Logic simplified for demo
+      const trendCtx = document.getElementById('trendChart').getContext('2d');
+      const labels = Array.from({ length: 7 }, (_, i) => `Feb ${i + 14}`);
+      const accentColor = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#059669';
+      charts.trend = new Chart(trendCtx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Rewards Allocated', data: [80, 120, 95, 140, 110, 160, 130], borderColor: accentColor, backgroundColor: accentColor + '1A', fill: true, tension: 0.4 },
+            { label: 'Utilized', data: [30, 45, 38, 52, 48, 65, 50], borderColor: '#1E3A8A', backgroundColor: 'rgba(30, 58, 138, 0.1)', fill: true, tension: 0.4 }
+          ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+
+      // Company Pie
+      const compCtx = document.getElementById('companyChart').getContext('2d');
+      charts.company = new Chart(compCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Corporate', 'Mid-size', 'Startup'],
+          datasets: [{ data: [62, 38, 56], backgroundColor: ['#1E3A8A', '#059669', '#F59E0B'], borderWidth: 2 }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+
+      // District Bar
+      const distCtx = document.getElementById('districtChart').getContext('2d');
+      charts.district = new Chart(distCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Americas', 'Europe', 'APAC', 'MEA', 'LATAM'],
+          datasets: [{ label: 'Compensated Talent', data: [245, 189, 132, 118, 97], backgroundColor: accentColor, borderRadius: 6 }]
+        },
+        options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } } }
+      });
+    }
+
+    function renderBias() {
+      const tierData = [
+        { label: 'Tier 1 (Anna Univ, VIT, etc)', pct: 32 },
+        { label: 'Tier 2 (PSG, Thiagarajar, etc)', pct: 38 },
+        { label: 'Tier 3 (Others)', pct: 30 },
+      ];
+      document.getElementById('tierBars').innerHTML = tierData.map(d => `
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>${d.label}</span><span style="font-weight:700;">${d.pct}%</span></div>
+          <div style="background:#E5E7EB;height:8px;border-radius:10px;overflow:hidden;"><div style="width:${d.pct}%;height:100%;background:#1E40AF;border-radius:10px;"></div></div>
+        </div>
+      `).join('');
+
+      const genderData = [
+        { label: 'Male', pct: 54, color: '#1E40AF' },
+        { label: 'Female', pct: 44, color: '#EC4899' },
+        { label: 'Other/Not specified', pct: 2, color: '#6B7280' },
+      ];
+      document.getElementById('genderBars').innerHTML = genderData.map(d => `
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>${d.label}</span><span style="font-weight:700;">${d.pct}%</span></div>
+          <div style="background:#E5E7EB;height:8px;border-radius:10px;overflow:hidden;"><div style="width:${d.pct}%;height:100%;background:${d.color};border-radius:10px;"></div></div>
+        </div>
+      `).join('');
+    }
+
+    function renderCompanyTable(list) {
+      if (!list.length) {
+        document.getElementById('companyTable').innerHTML = '<tr><td colspan="7" style="text-align:center;">No company data available</td></tr>';
+        return;
+      }
+      document.getElementById('companyTable').innerHTML = list.map(c => `
+        <tr>
+          <td style="font-weight:700;">${c.name}</td>
+          <td><span class="badge ${c.type === 'Startup' ? 'badge-green' : 'badge-blue'}">${c.type || 'Corporate'}</span></td>
+          <td>${c.hired_count || 0} Hired</td>
+          <td style="font-weight:700;">$${(c.csr_balance || 0).toLocaleString('en-US')}</td>
+          <td>$${(c.reserved_amount || 0).toLocaleString('en-US')}</td>
+          <td><span class="status-active">active</span></td>
+          <td style="display:flex;gap:6px;">
+            <button class="btn btn-sm" style="background:#EFF6FF;color:#1E40AF;border:none;" onclick="viewCompany('${c.email}')">Audit</button>
+            <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:none;" onclick="flagCompany('${c.name}')">Flag</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function viewCompany(email) {
+      const c = currentCompanies.find(x => x.email === email);
+      if (!c) return;
+      openModal(`
+        <div style="text-align:center;margin-bottom:20px;"><div style="font-size:42px;">🏢</div><div style="font-size:20px;font-weight:800;">${c.name}</div><div style="color:#6B7280;">${c.type || 'Corporate'}</div></div>
+        <div class="grid-2" style="gap:12px;margin-bottom:16px;">
+          <div style="background:#F8FAFC;padding:14px;border-radius:8px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#1E40AF;">${c.total_tasks || 0}</div><div style="font-size:12px;color:#6B7280;">Tasks Posted</div></div>
+          <div style="background:#F8FAFC;padding:14px;border-radius:8px;text-align:center;"><div style="font-size:20px;font-weight:800;color:#059669;">$${(c.csr_wallet || 0).toLocaleString('en-US')}</div><div style="font-size:12px;color:#6B7280;">Reward Pool</div></div>
+        </div>
+        <div style="background:#FFFBEB;padding:14px;border-radius:8px;margin-bottom:16px;">
+          <div style="font-weight:700;margin-bottom:4px;">Trust Score: ${c.trust_score || 4.0}/5.0 ⭐</div>
+          <div style="font-size:13px;color:#6B7280;">Verified based on blockchain escrow history.</div>
+        </div>
+        <button class="btn btn-red" style="width:100%;justify-content:center;" onclick="flagCompany('${c.name}')">🚩 Flag for Investigation</button>
+      `, `Company: ${c.name}`);
+    }
+
+    function flagCompany(name) {
+      const content = `
+        <div class="form-group"><label class="form-label">Reason for Flag</label><select class="form-control" id="flagReason"><option>Suspected exploitation</option><option>Payment irregularities</option><option>False task postings</option></select></div>
+        <div class="form-group"><label class="form-label">Investigation Notes</label><textarea class="form-control" placeholder="Detailed notes..."></textarea></div>
+        <button class="btn btn-red" style="width:100%;justify-content:center;" onclick="confirmFlag('${name}')">🚩 Submit Flag</button>
+      `;
+      openModal(content, `🚩 Flag: ${name}`);
+    }
+
+    function confirmFlag(name) {
+      showToast('Flag submitted for investigation.', 'warning');
+      document.querySelector('.modal-overlay')?.remove();
+    }
+
+    init();
+  </script>
+
+
+</body>
+
+</html>

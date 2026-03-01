@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Dashboard - AccelerateAI</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="theme-mentor">
+    <div class="dashboard-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active">📊 Dashboard</a>
+                <a href="dashboard.html#requestsSection" class="nav-item" id="reqLink">📩 Requests <span id="reqCount"
+                        class="badge-pill"
+                        style="background: var(--accent); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto;">0</span></a>
+                <a href="messages.html" class="nav-item">💬 Messaging</a>
+                <a href="wallet.html" class="nav-item">💰 Wallet</a>
+                <a href="#" class="nav-item">🚩 Report Misuse</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="avatarDisplay">M</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Mentor</div>
+                        <div class="user-role">Industry Expert</div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-title">Expert Mentor Dashboard</div>
+                <div class="topbar-actions">
+                    <div class="role-badge">Mentor Portal</div>
+                    <div class="badge badge-primary"
+                        style="background: var(--accent-tint); color: var(--accent); border: 1px solid var(--accent);">
+                        <span style="margin-right:4px;">✔</span> Verified Industry Professional
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content page-fade">
+                <!-- STATS -->
+                <div class="grid-4" style="margin-bottom: 32px;">
+                    <div class="stat-card">
+                        <div class="stat-label">Assigned Interns</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Tasks Completed</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pending Honorarium</div>
+                        <div class="stat-value">$0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Mentor Trust Score</div>
+                        <div class="stat-value">4.9</div>
+                    </div>
+                </div>
+
+                <!-- PENDING REQUESTS SECTION -->
+                <div id="requestsSection" style="display:none; margin-bottom: 32px;">
+                    <div class="section-header">
+                        <h3 class="section-title">📩 Pending Mentorship Requests</h3>
+                    </div>
+                    <div class="grid-3" id="requestsGrid" style="gap: 24px;">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- ASSIGNED INTERNS TABLE -->
+                <div class="card">
+                    <div class="section-header" style="margin-bottom: 24px;">
+                        <h3 class="section-title">👥 My Interns (Academic Guidance)</h3>
+                    </div>
+                    <div class="table-wrap">
+                        <table style="border: none;">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>College / University</th>
+                                    <th>Grad Year</th>
+                                    <th>Skills</th>
+                                    <th>Joined Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="internTable">
+                                <!-- populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        async function init() {
+            const user = getUser();
+            if (!user || user.role !== 'mentor') { window.location.href = 'login.html'; return; }
+
+            try {
+                const dashboard = await apiCall('/mentor/dashboard');
+                const profile = dashboard.profile || {};
+
+                document.getElementById('userName').textContent = profile.name || user.name;
+                document.getElementById('avatarDisplay').textContent = (profile.name || user.name || 'M')[0].toUpperCase();
+
+                // Fetch Requests
+                const reqData = await apiCall('/mentorship/requests');
+                const requests = reqData.requests || [];
+                document.getElementById('reqCount').textContent = requests.length;
+                if (requests.length > 0) {
+                    document.getElementById('requestsSection').style.display = 'block';
+                    renderRequests(requests);
+                } else {
+                    document.getElementById('requestsSection').style.display = 'none';
+                    document.getElementById('requestsGrid').innerHTML = '';
+                }
+
+                // Fetch Interns
+                const internData = await apiCall('/mentorship/interns');
+                renderInterns(internData.interns || []);
+
+                // Update stats
+                const statCards = document.querySelectorAll('.stat-value');
+                statCards[0].textContent = (internData.interns || []).length;
+                statCards[2].textContent = '$' + (dashboard.stats?.honorarium_balance || 0).toLocaleString('en-US');
+
+                // Internal Hash Handling
+                if (window.location.hash === '#requestsSection') {
+                    setTimeout(() => {
+                        document.getElementById('requestsSection')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 500);
+                }
+
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
+        }
+
+        function renderRequests(list) {
+            document.getElementById('requestsGrid').innerHTML = list.map(r => `
+                <div class="stat-card" style="text-align:left;height:auto;gap:10px;display:flex;flex-direction:column;">
+                    <div style="font-weight:800;font-size:16px;">${r.student_name}</div>
+                    <div style="font-size:13px;color:#6B7280;">${r.college} (${r.grad_year})</div>
+                    <div style="font-size:12px;color:var(--accent);font-weight:700;">AI Readiness: ${r.readiness_index}%</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                        ${r.skills.slice(0, 3).map(s => `<span class="tag" style="font-size:10px;padding:2px 6px;">${s}</span>`).join('')}
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:10px;">
+                        <button class="btn btn-primary btn-sm" style="flex:1;" onclick="respond('${r.request_id}', 'accept')">Accept</button>
+                        <button class="btn btn-outline btn-sm" style="flex:1;" onclick="respond('${r.request_id}', 'reject')">Decline</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function respond(rid, action) {
+            try {
+                await apiCall('/mentorship/respond', 'POST', { request_id: rid, action });
+                showToast(`Request ${action}ed!`, 'success');
+                init();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        function renderInterns(list) {
+            const table = document.getElementById('internTable');
+            if (list.length === 0) {
+                table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#9CA3AF;">No interns accepted yet.</td></tr>';
+                return;
+            }
+            table.innerHTML = list.map(i => `
+                <tr>
+                    <td style="font-weight:700;">${i.name}</td>
+                    <td>${i.college}</td>
+                    <td><span class="badge badge-primary">Graduating ${new Date(i.assigned_at).getFullYear() + 1}</span></td>
+                    <td><div style="display:flex;gap:4px;flex-wrap:wrap;">${i.skills.slice(0, 2).map(s => `<span class="tag">${s}</span>`).join('')}</div></td>
+                    <td>${new Date(i.assigned_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="window.location.href='messages.html?user_id=${i.student_id}'">💬 Messaging</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

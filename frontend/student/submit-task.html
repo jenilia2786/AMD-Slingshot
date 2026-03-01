@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Task - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    .code-editor {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      background: #1E293B;
+      color: #E2E8F0;
+      border: none;
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 280px;
+      resize: vertical;
+      width: 100%;
+      outline: none;
+      line-height: 1.6;
+      tab-size: 2;
+    }
+
+    .lang-selector {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .lang-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1.5px solid #E5E7EB;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .lang-btn.active {
+      background: #1E40AF;
+      color: white;
+      border-color: #1E40AF;
+    }
+
+    .lang-btn:hover:not(.active) {
+      border-color: #1E40AF;
+      color: #1E40AF;
+    }
+
+    .timer {
+      font-size: 28px;
+      font-weight: 800;
+      color: #DC2626;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .eval-step {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .eval-step.done {
+      background: #ECFDF5;
+    }
+
+    .eval-step.running {
+      background: #EFF6FF;
+    }
+
+    .eval-step.pending {
+      background: #F3F4F6;
+    }
+
+    .eval-icon {
+      font-size: 24px;
+      width: 36px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body class="theme-student">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="tasks.html" class="nav-item">📋 Browse Tasks</a>
+        <a href="mentors.html" class="nav-item">🎓 Find Mentor</a>
+        <a href="submit-task.html" class="nav-item active">📤 My Submissions</a>
+        <a href="wallet.html" class="nav-item">💰 Wallet</a>
+        <a href="messages.html" class="nav-item">💬 Messaging</a>
+        <a href="profile.html" class="nav-item">👤 Profile</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">S</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Student</div>
+            <div class="user-role">Intern</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-title">Task Submission</div>
+        <div class="topbar-actions">
+          <a href="tasks.html" class="btn btn-outline btn-sm">← Back to Tasks</a>
+        </div>
+      </div>
+
+      <div class="page-content page-fade">
+        <div class="grid-2" style="gap:28px;align-items:start;">
+          <!-- LEFT: TASK INFO + SUBMISSION -->
+          <div>
+            <div class="card-flat" style="margin-bottom:24px;" id="taskInfoCard">
+              <div id="taskInfo"><!-- filled by JS --></div>
+            </div>
+
+            <div class="card-flat">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h3 style="font-size:18px;font-weight:800;">📤 Your Submission</h3>
+                <div>
+                  <span style="font-size:12px;color:#6B7280;margin-right:8px;">Deadline countdown:</span>
+                  <span class="timer" id="countdown">--:--:--</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Programming Language</label>
+                <div class="lang-selector">
+                  <button class="lang-btn active" onclick="setLang(this,'Python')">🐍 Python</button>
+                  <button class="lang-btn" onclick="setLang(this,'JavaScript')">🟨 JavaScript</button>
+                  <button class="lang-btn" onclick="setLang(this,'Java')">☕ Java</button>
+                  <button class="lang-btn" onclick="setLang(this,'C++')">⚡ C++</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Your Code / Solution</label>
+                <textarea class="code-editor" id="codeEditor" placeholder="# Write your solution here...
+# Example:
+import pandas as pd
+import numpy as np
+
+def process_data(df):
+    # Your implementation
+    pass"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">GitHub Repository Link (Required)</label>
+                <input type="url" class="form-control" id="githubRepo"
+                  placeholder="https://github.com/yourusername/project">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Explanation / Approach (Optional)</label>
+                <textarea class="form-control" id="approach"
+                  placeholder="Briefly explain your approach, design decisions, and any assumptions..."
+                  style="min-height:80px;"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Upload Files (Optional)</label>
+                <div style="border:2px dashed #E5E7EB;border-radius:8px;padding:24px;text-align:center;cursor:pointer;"
+                  onclick="document.getElementById('fileInput').click()">
+                  <div style="font-size:28px;margin-bottom:8px;"><img src="../assets/tn-logo.png"
+                      style="height:32px; opacity:0.5;"></div>
+                  <div style="font-size:14px;color:#6B7280;">Click to upload files (max 10MB)</div>
+                  <div style="font-size:12px;color:#9CA3AF;margin-top:4px;">PDF, ZIP, Images supported</div>
+                </div>
+                <input type="file" id="fileInput" style="display:none;" multiple onchange="handleFileUpload(this)">
+                <div id="fileList"></div>
+              </div>
+
+              <div
+                style="background:#FFFBEB;border:1px solid #FCD34D;padding:14px;border-radius:10px;font-size:13px;margin-bottom:20px;">
+                <strong>⭐ CSR Guarantee:</strong> You will receive $<span id="rewardAmt">800</span> evaluation reward
+                regardless of hiring outcome. Payment released automatically after AI evaluation.
+              </div>
+
+              <button class="btn btn-primary" style="width:100%;justify-content:center;padding:16px;font-size:16px;"
+                id="submitBtn" onclick="submitTask()">
+                🚀 Submit for AI Evaluation
+              </button>
+            </div>
+          </div>
+
+          <!-- RIGHT: REQUIREMENTS + MY SUBMISSIONS -->
+          <div>
+            <div class="card-flat" style="margin-bottom:24px;">
+              <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;">✅ Requirements Checklist</h3>
+              <div id="requirementsList"></div>
+            </div>
+
+            <div class="card-flat">
+              <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;">📜 My Previous Submissions</h3>
+              <div id="prevSubmissions"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    let currentTask = null;
+    let selectedLang = 'Python';
+
+    const defaultRequirements = [
+      'Solution must be written in the selected language',
+      'Code must be original and not plagiarized',
+      'Must satisfy all task requirements in description',
+      'Include comments for complex logic',
+      'Ensure code is well-formatted and readable'
+    ];
+
+    async function init() {
+      const user = getUser();
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      try {
+        const profile = await apiCall('/student/profile');
+        const wallet = await apiCall('/student/wallet');
+
+        document.getElementById('userName').textContent = profile.profile?.name || user.name || 'Student';
+
+        const taskData = localStorage.getItem('currentTask');
+        if (!taskData) {
+          showToast('No task selected. Redirecting...', 'warning');
+          setTimeout(() => window.location.href = 'tasks.html', 1500);
+          return;
+        }
+
+        currentTask = JSON.parse(taskData);
+        document.getElementById('rewardAmt').textContent = currentTask.reward_per_candidate || currentTask.reward || 0;
+
+        renderTaskInfo();
+        renderRequirements();
+        renderPrevSubmissions(wallet.transactions || []);
+        startCountdown();
+      } catch (err) {
+        showToast('Error loading page: ' + err.message, 'error');
+      }
+    }
+
+    function renderTaskInfo() {
+      if (!currentTask) return;
+      document.getElementById('taskInfo').innerHTML = `
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;">
+          <div style="font-size:36px;">🏢</div>
+          <div>
+            <div style="font-size:18px;font-weight:800;">${currentTask.title}</div>
+            <div style="color:#6B7280;font-size:13px;">${currentTask.company_name || 'Company'}</div>
+          </div>
+          ${difficultyBadge(currentTask.difficulty)}
+        </div>
+        <div style="font-size:14px;color:#374151;line-height:1.7;margin-bottom:14px;">${currentTask.description}</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;padding-top:12px;border-top:1px solid #E5E7EB;">
+          <div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:#059669;">$${currentTask.reward_per_candidate || 0}</div><div style="font-size:11px;color:#6B7280;">Eval Reward</div></div>
+          <div style="text-align:center;"><div style="font-size:17px;font-weight:800;color:#1E40AF;">$${(currentTask.internship_stipend || 0).toLocaleString('en-US')}/mo</div><div style="font-size:11px;color:#6B7280;">If Hired</div></div>
+          <div style="text-align:center;"><div style="font-size:17px;font-weight:800;color:#F59E0B;">${currentTask.deadline ? daysLeft(currentTask.deadline) : 'N/A'}</div><div style="font-size:11px;color:#6B7280;">Deadline</div></div>
+        </div>
+      `;
+    }
+
+    function renderRequirements() {
+      document.getElementById('requirementsList').innerHTML = defaultRequirements.map((r, i) => `
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #F3F4F6;">
+          <input type="checkbox" id="req${i}" style="margin-top:3px;cursor:pointer;" onchange="checkAllReqs()">
+          <label for="req${i}" style="font-size:14px;cursor:pointer;">${r}</label>
+        </div>
+      `).join('');
+    }
+
+    function checkAllReqs() {
+      const all = document.querySelectorAll('#requirementsList input[type=checkbox]');
+      const done = [...all].every(c => c.checked);
+      document.getElementById('submitBtn').style.opacity = done ? '1' : '0.6';
+    }
+
+    function renderPrevSubmissions(transactions) {
+      const container = document.getElementById('prevSubmissions');
+      const payments = transactions.filter(t => t.type === 'reward_payment');
+
+      if (!payments.length) {
+        container.innerHTML = '<div style="color:#6B7280;font-size:14px;text-align:center;padding:20px;">No submissions found in history</div>';
+        return;
+      }
+
+      container.innerHTML = payments.slice(0, 5).map(s => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:8px;background:#F8FAFC;margin-bottom:8px;">
+          <div>
+            <div style="font-size:14px;font-weight:600;">Task: ${s.task_id}</div>
+            <div style="font-size:12px;color:#6B7280;">${new Date(s.timestamp).toLocaleDateString()}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:15px;font-weight:800;color:#059669;">$${s.amount}</div>
+            <span class="status-evaluated" style="font-size:11px;background:#ECFDF5;color:#059669;padding:2px 8px;border-radius:10px;font-weight:600;">Paid</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function setLang(btn, lang) {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedLang = lang;
+      const placeholders = {
+        Python: '# Write your Python solution here...\nimport pandas as pd\n\ndef main():\n    pass',
+        JavaScript: '// Write your JavaScript solution here...\nconst solve = () => {\n    // Your code\n}',
+        Java: '// Write your Java solution here...\npublic class Solution {\n    public static void main(String[] args) {\n    }\n}',
+        'C++': '// Write your C++ solution here...\n#include <iostream>\nusing namespace std;\n\nint main() {\n    return 0;\n}'
+      };
+      document.getElementById('codeEditor').placeholder = placeholders[lang] || '';
+    }
+
+    function handleFileUpload(input) {
+      const files = [...input.files];
+      const list = document.getElementById('fileList');
+      list.innerHTML = files.map(f => `<div style="font-size:13px;color:#059669;padding:4px 0;">✓ ${f.name} (${(f.size / 1024).toFixed(1)}KB)</div>`).join('');
+    }
+
+    function startCountdown() {
+      if (!currentTask || !currentTask.deadline) {
+        document.getElementById('countdown').textContent = 'Flexible';
+        return;
+      }
+      const deadline = new Date(currentTask.deadline);
+      function update() {
+        const diff = deadline - new Date();
+        if (diff <= 0) { document.getElementById('countdown').textContent = 'EXPIRED'; return; }
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        document.getElementById('countdown').textContent = `${d}d ${String(h).padStart(2, '0')}h ${String(m).padStart(2, '0')}m`;
+      }
+      update(); setInterval(update, 60000);
+    }
+
+    async function submitTask() {
+      const code = document.getElementById('codeEditor').value.trim();
+      const github = document.getElementById('githubRepo').value.trim();
+      if (!code) { showToast('Please write your solution before submitting', 'warning'); return; }
+      if (!github) { showToast('GitHub Repository Link is required', 'warning'); return; }
+
+      const unchecked = [...document.querySelectorAll('#requirementsList input[type=checkbox]')].filter(c => !c.checked);
+      if (unchecked.length > 0) {
+        showToast('Please confirm all requirements before submitting', 'warning'); return;
+      }
+
+      try {
+        showLoader('Submitting to LLM Engine...');
+        const payload = {
+          task_id: currentTask._id,
+          code: code,
+          github_url: github,
+          language: selectedLang,
+          approach: document.getElementById('approach').value.trim(),
+          zip_path: "" // Optional for now
+        };
+        const res = await apiCall(`/student/submit-task`, 'POST', payload);
+        hideLoader();
+
+        showEvaluationModal(res.submission_id);
+      } catch (err) {
+        hideLoader();
+        showToast('Submission failed: ' + err.message, 'error');
+      }
+    }
+
+    function showEvaluationModal(submissionId) {
+      const content = `
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="font-size:48px;margin-bottom:8px;">🤖</div>
+          <div style="font-size:18px;font-weight:700;">Local LLM Evaluation in Progress</div>
+          <div style="font-size:14px;color:#6B7280;margin-top:6px;">Analyzing code quality, plagiarism risk, and skill alignment...</div>
+        </div>
+        <div id="evalSteps">
+            <div class="eval-step running" id="evalStep0">
+              <div class="eval-icon">🔍</div>
+              <div style="flex:1;">
+                <div style="font-weight:700;font-size:14px;">Technical Evaluator</div>
+                <div style="font-size:13px;color:#6B7280;">Running deep code analysis...</div>
+              </div>
+              <div id="stepStatus0" style="font-size:20px;">🔄</div>
+            </div>
+        </div>
+        <div id="resultsBtnContainer" style="display:none; text-align:center; margin-top:20px;">
+          <button class="btn btn-primary" onclick="showEvaluationResults()" style="width:100%; padding:16px;">
+            📊 View AI Report & Reward Status
+          </button>
+        </div>
+        <div id="evalResults" style="display:none;"></div>
+      `;
+
+      const modal = openModal(content, '🧠 AI Code Evaluation');
+      pollEvaluation(submissionId, modal);
+    }
+
+    let lastEvaluationResults = null;
+
+    async function pollEvaluation(submissionId, modal) {
+      let attempts = 0;
+      const maxAttempts = 60;
+
+      while (attempts < maxAttempts) {
+        try {
+          const res = await apiCall(`/student/evaluation/${submissionId}`);
+          if (res && res.overall_score > 0) {
+            lastEvaluationResults = res;
+            document.getElementById('evalStep0').className = 'eval-step done';
+            document.getElementById('stepStatus0').textContent = '✅';
+            document.getElementById('resultsBtnContainer').style.display = 'block';
+            showToast("AI Evaluation Complete!", "success");
+            return;
+          }
+        } catch (err) { console.error('Polling error:', err); }
+        await new Promise(r => setTimeout(r, 2000));
+        attempts++;
+      }
+      showToast('Evaluation is taking longer tracking... check your dashboard later.', 'info');
+    }
+
+    function showEvaluationResults() {
+      if (!lastEvaluationResults) return;
+      const results = lastEvaluationResults;
+      const evalResultsEl = document.getElementById('evalResults');
+      document.getElementById('resultsBtnContainer').style.display = 'none';
+      document.getElementById('evalSteps').style.display = 'none';
+
+      evalResultsEl.style.display = 'block';
+      const score = results.overall_score;
+      const rewardAmt = currentTask.reward_per_candidate || 800;
+      const status = results.overall_score >= (currentTask.min_score || 75) ? 'REWARD_RELEASED' : 'EVALUATED';
+
+      evalResultsEl.innerHTML = `
+        <div style="border-top:1px solid #E5E7EB;margin-top:20px;padding-top:20px;">
+          <div style="display:flex;justify-content:center;gap:24px;margin-bottom:24px;">
+            ${createProgressRing(score, 100, '#1E40AF', 'Overall Quality')}
+            ${createProgressRing(results.plagiarism_risk, 100, '#DC2626', 'Plagiarism Risk')}
+          </div>
+          
+          <div style="background:#F8FAFC;border:1px solid #E2E8F0;padding:16px;border-radius:12px;margin-bottom:20px;">
+            <div style="font-weight:800;font-size:14px;margin-bottom:8px;">🗣️ AI Feedback</div>
+            <div style="font-size:13px;color:#475569;line-height:1.6;">${results.evaluation_summary}</div>
+            <div style="font-size:13px;font-weight:700;margin-top:12px;color:#1E40AF;">💡 Improvement: ${results.improvement_suggestions}</div>
+          </div>
+
+          ${status === 'REWARD_RELEASED' ? `
+            <div style="background:linear-gradient(135deg, #059669, #10b981);color:white;padding:20px;border-radius:12px;text-align:center;box-shadow:0 10px 15px -3px rgba(16, 185, 129, 0.2);">
+              <div style="font-size:24px;font-weight:800;">$${rewardAmt} Credited! 💰</div>
+              <div style="font-size:13px;margin-top:4px;opacity:0.9;">Score meets threshold. Released from company CSR Escrow.</div>
+              <button class="btn btn-sm" style="margin-top:12px;background:white;color:#059669;font-weight:800;" onclick="window.location.href='wallet.html'">View in Wallet</button>
+            </div>
+          ` : `
+            <div style="background:#FEF3C7;border:1px solid #FCD34D;color:#92400E;padding:16px;border-radius:12px;text-align:center;">
+              <div style="font-weight:800;">Score: ${score}/100</div>
+              <div style="font-size:13px;margin-top:4px;">Minimum threshold for reward is ${currentTask.min_score || 75}. Keep practicing!</div>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    init();
+
+  </script>
+</body>
+
+</html>

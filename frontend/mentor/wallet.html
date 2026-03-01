@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Honorarium - AccelerateAI</title>
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+
+<body class="theme-mentor">
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+                <a href="dashboard.html#requests" class="nav-item" id="reqLink">📩 Requests <span id="reqCount"
+                        class="badge-pill"
+                        style="background: var(--accent); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto;">0</span></a>
+                <a href="messages.html" class="nav-item">💬 Messaging</a>
+                <a href="wallet.html" class="nav-item active">💰 Wallet</a>
+                <a href="#" class="nav-item">🚩 Report Misuse</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="avatarDisplay">M</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Mentor</div>
+                        <div class="user-role">Industry Expert</div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <div class="topbar">
+                <div class="topbar-title">Financial Transparency Dashboard</div>
+                <div class="topbar-actions">
+                    <div class="badge badge-primary">CSR-Funded Guidance</div>
+                </div>
+            </div>
+
+            <div class="page-content page-fade">
+                <!-- WALLET CARDS -->
+                <div class="wallet-summary-card"
+                    style="background: linear-gradient(135deg, #d97706, #f59e0b); border-radius: 20px; padding: 40px; color: white; margin-bottom: 28px; position: relative; overflow: hidden; box-shadow: 0 15px 30px rgba(245, 158, 11, 0.2);">
+                    <div
+                        style="position:absolute;top:-30px;right:-30px;width:200px;height:200px;background:rgba(255,255,255,0.05);border-radius:50%;">
+                    </div>
+                    <div
+                        style="position:absolute;bottom:-50px;left:-20px;width:150px;height:150px;background:rgba(255,255,255,0.03);border-radius:50%;">
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <div
+                                style="font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                                💰 Total Earned (Received)</div>
+                            <div style="font-size: 56px; font-weight: 800; font-family: 'Syne', sans-serif; margin-bottom: 4px;"
+                                id="earnedDisplay">$24,000</div>
+                            <div style="font-size: 13px; opacity: 0.8;">Successfully transferred to your registered bank
+                                account</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div
+                                style="font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                                ⏳ Yet to Get</div>
+                            <div style="font-size: 32px; font-weight: 700;" id="pendingDisplay">$18,000</div>
+                            <div style="font-size: 13px; opacity: 0.8;">Locked in Escrow (Task validation pending)</div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:16px;margin-top:32px;flex-wrap:wrap;">
+                        <div
+                            style="background:rgba(255,255,255,0.15);padding:14px 24px;border-radius:12px;backdrop-filter: blur(10px);border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="font-size:20px;font-weight:700;">$42,000</div>
+                            <div style="font-size:12px;opacity:0.8;font-weight:500;">Lifetime Honorarium</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAYMENT HISTORY -->
+                <div class="section-header">
+                    <div class="section-title">Honorarium Tracking by Intern</div>
+                </div>
+                <div class="card-flat">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Intern Name</th>
+                                    <th>Project</th>
+                                    <th>CSR Source Company</th>
+                                    <th>Honorarium</th>
+                                    <th>Service Period</th>
+                                    <th>Payment Status</th>
+                                    <th>TXN ID</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentTable">
+                                <!-- populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top:28px;background:#F8FAFC;border:1px dashed var(--indigo-light);padding:24px;border-radius:12px;display:flex;gap:16px;align-items:center;">
+                    <div style="font-size:32px;">📑</div>
+                    <div style="flex:1;">
+                        <h4 style="margin-bottom:4px;">CSR honorarium release policy</h4>
+                        <p style="font-size:13px;color:#6B7280;">Mentor honorarium is locked in escrow by the company at
+                            the start of the internship. Payments are released automatically to your linked account
+                            within 48 hours of your final completion recommendation and company verification.</p>
+                    </div>
+                    <button class="btn btn-outline btn-sm">Download Tax Receipt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        const payments = [
+            { intern: 'Ashwin Kumar T', project: 'Python Pipeline', company: 'TechCorp', amt: 6000, period: 'Jan - Mar 2026', status: 'Locked in Escrow', id: 'TXN_MEN_881' },
+            { intern: 'Deepika S', project: 'API Security Audit', company: 'TechCorp', amt: 6000, period: 'Jan - Mar 2026', status: 'Locked in Escrow', id: 'TXN_MEN_884' },
+            { intern: 'Vijay Raman', project: 'Cloud Migration', company: 'StartupX', amt: 6000, period: 'Feb - Apr 2026', status: 'Locked in Escrow', id: 'TXN_MEN_885' },
+            { intern: 'Priya Dharshini R', project: 'React Dashboard', company: 'StartupX', amt: 8000, period: 'Dec - Feb 2026', status: 'Paid', id: 'TXN_MEN_442' },
+            { intern: 'Anand Satya', project: 'Data Lake Sync', company: 'InnovateBig', amt: 8000, period: 'Nov - Jan 2026', status: 'Paid', id: 'TXN_MEN_311' },
+            { intern: 'Meera Nair', project: 'NLU Component', company: 'InnovateBig', amt: 8000, period: 'Nov - Jan 2026', status: 'Paid', id: 'TXN_MEN_312' },
+        ];
+
+        function init() {
+            const user = getUser();
+            if (!user || user.role !== 'mentor') { window.location.href = 'login.html'; return; }
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('avatarDisplay').textContent = user.name[0].toUpperCase();
+
+            updateSummaryStats();
+            renderPayments();
+        }
+
+        function updateSummaryStats() {
+            const earned = payments.filter(p => p.status === 'Paid').reduce((sum, p) => sum + p.amt, 0);
+            const pending = payments.filter(p => p.status !== 'Paid').reduce((sum, p) => sum + p.amt, 0);
+
+            if (document.getElementById('earnedDisplay'))
+                document.getElementById('earnedDisplay').textContent = '$' + earned.toLocaleString('en-US');
+            if (document.getElementById('pendingDisplay'))
+                document.getElementById('pendingDisplay').textContent = '$' + pending.toLocaleString('en-US');
+        }
+
+        function renderPayments() {
+            document.getElementById('paymentTable').innerHTML = payments.map(p => `
+    <tr>
+      <td style="font-weight:700;">${p.intern}</td>
+      <td>${p.project}</td>
+      <td><span class="badge ${p.company === 'TechCorp' ? 'badge-blue' : 'badge-gold'}">${p.company}</span></td>
+      <td style="font-weight:800;color:var(--indigo-dark);">$${p.amt.toLocaleString('en-US')}</td>
+      <td style="font-size:13px;color:#6B7280;">${p.period}</td>
+      <td><span class="badge ${p.status === 'Paid' ? 'badge-green' : 'badge-gold'}">${p.status}</span></td>
+      <td style="font-family:monospace;font-size:12px;color:#9CA3AF;">${p.id}</td>
+    </tr>
+  `).join('');
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

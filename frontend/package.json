@@ -1,0 +1,13 @@
+{
+    "name": "tn-internfair-frontend",
+    "version": "1.0.0",
+    "description": "Frontend static assets for TN InternFair",
+    "main": "index.html",
+    "scripts": {
+        "start": "npx serve .",
+        "dev": "npx serve ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}

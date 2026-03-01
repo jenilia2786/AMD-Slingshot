@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="theme-government">
+  <div class="dashboard-layout">
+    <aside class="sidebar" style="background:#064e3b;">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="analytics.html" class="nav-item active">📈 Analytics</a>
+        <a href="audit.html" class="nav-item">🔗 Audit Logs</a>
+        <a href="analytics.html#companies" class="nav-item">🏢 Companies</a>
+        <a href="analytics.html#bias" class="nav-item">⚖️ Bias Monitor</a>
+      </nav>
+      <div class="sidebar-footer" style="border-top:1px solid rgba(255,255,255,0.1);">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">G</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Admin</div>
+            <div class="user-role">Government</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-title">Full Analytics Report</div>
+        <div class="topbar-actions">
+          <button class="btn btn-green btn-sm" onclick="exportReport()">📥 Export Report</button>
+        </div>
+      </div>
+
+      <div class="page-content page-fade">
+        <!-- OVERALL STATS -->
+        <div class="grid-4" style="margin-bottom:28px;">
+          <div class="stat-card gold"><span class="stat-icon">💰</span>
+            <div class="stat-value">$25L</div>
+            <div class="stat-label">Total CSR Utilized</div>
+          </div>
+          <div class="stat-card green"><span class="stat-icon">👨‍🎓</span>
+            <div class="stat-value">1,247</div>
+            <div class="stat-label">Students Compensated</div>
+          </div>
+          <div class="stat-card"><span class="stat-icon">🏢</span>
+            <div class="stat-value">156</div>
+            <div class="stat-label">Active Companies</div>
+          </div>
+          <div class="stat-card"><span class="stat-icon">📋</span>
+            <div class="stat-value">342</div>
+            <div class="stat-label">Tasks Completed</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:28px;gap:24px;">
+          <div class="chart-card">
+            <div class="chart-title">📊 Monthly CSR Flow (Last 6 Months)</div>
+            <canvas id="monthlyChart" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">🎓 Task Domain Distribution</div>
+            <canvas id="domainChart" height="200"></canvas>
+          </div>
+        </div>
+
+        <!-- BIAS DEEP DIVE -->
+        <div id="bias" style="margin-bottom:28px;">
+          <div class="section-header">
+            <div class="section-title">⚖️ Bias Neutrality Deep Dive</div>
+          </div>
+          <div class="grid-2" style="gap:24px;">
+            <div class="chart-card">
+              <div class="chart-title">College Tier Participation Over Time</div>
+              <canvas id="tierTimeChart" height="200"></canvas>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Selection Rate by College Tier</div>
+              <canvas id="selectionChart" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- COMPANIES TABLE -->
+        <div id="companies">
+          <div class="section-header">
+            <div class="section-title">🏢 Company Compliance Report</div>
+          </div>
+          <div class="card-flat">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Company</th>
+                    <th>Type</th>
+                    <th>Tasks</th>
+                    <th>CSR ($)</th>
+                    <th>Paid on Time</th>
+                    <th>Hiring %</th>
+                    <th>Trust</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="complianceBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    let currentCompanies = [];
+
+    async function init() {
+      const user = getUser();
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      try {
+        const analytics = await apiCall('/government/analytics');
+        const companiesRes = await apiCall('/government/companies');
+        currentCompanies = companiesRes.companies || [];
+
+        updateSummaryStats(analytics, currentCompanies);
+        renderCharts(analytics);
+        renderCompliance(currentCompanies);
+      } catch (err) {
+        showToast('Error loading analytics: ' + err.message, 'error');
+      }
+    }
+
+    function updateSummaryStats(analytics, companies) {
+      const cards = document.querySelectorAll('.stat-card .stat-value');
+      if (cards.length >= 4) {
+        cards[0].textContent = formatCurrency(analytics.csr_utilized_total || 2500000);
+        cards[1].textContent = (analytics.students_compensated || 1247).toLocaleString();
+        cards[2].textContent = (companies.length || 156).toLocaleString();
+        cards[3].textContent = (analytics.active_internships || 342).toLocaleString();
+      }
+    }
+
+    function renderCharts(analytics) {
+      const months = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'];
+
+      new Chart(document.getElementById('monthlyChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: months, datasets: [
+            { label: 'Deposited', data: [180, 220, 195, 310, 280, 250], backgroundColor: 'rgba(5,150,105,0.7)', borderRadius: 6 },
+            { label: 'Released', data: [62, 95, 88, 124, 118, 98], backgroundColor: 'rgba(30,64,175,0.7)', borderRadius: 6 }
+          ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+
+      new Chart(document.getElementById('domainChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Web Dev', 'AI/ML', 'Data Science', 'Design', 'Mobile', 'Other'],
+          datasets: [{ data: [28, 22, 19, 14, 10, 7], backgroundColor: ['#1E40AF', '#059669', '#F59E0B', '#EC4899', '#8B5CF6', '#6B7280'], borderWidth: 2 }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+
+      new Chart(document.getElementById('tierTimeChart').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: months, datasets: [
+            { label: 'Tier 1', data: [28, 30, 31, 33, 32, 32], borderColor: '#1E40AF', tension: 0.4 },
+            { label: 'Tier 2', data: [36, 37, 38, 37, 38, 38], borderColor: '#059669', tension: 0.4 },
+            { label: 'Tier 3', data: [36, 33, 31, 30, 30, 30], borderColor: '#F59E0B', tension: 0.4 }
+          ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+
+      new Chart(document.getElementById('selectionChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: ['Tier 1', 'Tier 2', 'Tier 3'],
+          datasets: [{ label: 'Selection Rate %', data: [16.2, 14.8, 13.9], backgroundColor: ['#1E40AF', '#059669', '#F59E0B'], borderRadius: 8 }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+      });
+    }
+
+    function renderCompliance(list) {
+      if (!list.length) {
+        document.getElementById('complianceBody').innerHTML = '<tr><td colspan="9" style="text-align:center;">No company data found.</td></tr>';
+        return;
+      }
+      document.getElementById('complianceBody').innerHTML = list.map(c => `
+        <tr>
+          <td style="font-weight:700;">${c.name}</td>
+          <td><span class="badge ${c.type === 'Startup' ? 'badge-green' : 'badge-blue'}">${c.type || 'Corporate'}</span></td>
+          <td>${c.total_tasks || 0}</td>
+          <td>$${(c.csr_wallet || 0).toLocaleString('en-US')}</td>
+          <td style="font-weight:700;color:#059669;">98%</td>
+          <td style="font-weight:700;">${c.hiring_rate || 14}%</td>
+          <td style="font-weight:800;color:${(c.trust_score || 4) >= 4 ? '#059669' : '#F59E0B'};">${c.trust_score || 4.0} ⭐</td>
+          <td><span class="status-active">active</span></td>
+          <td>
+            <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;border:none;" onclick="showToast('Flag requested for ${c.name}','warning')">🚩 Flag</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function exportReport() {
+      showToast('Processing PDF Export...', 'info');
+      setTimeout(() => showToast('Analytics report exported! 📄', 'success'), 2000);
+    }
+
+    init();
+  </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Task - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    .preview-card {
+      background: linear-gradient(135deg, var(--bg-main), var(--accent-tint));
+      border: 1.5px solid var(--accent-tint);
+      border-radius: 16px;
+      padding: 24px;
+      position: sticky;
+      top: 84px;
+    }
+
+    .preview-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .skill-chip-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px 12px;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 8px;
+      min-height: 46px;
+      cursor: text;
+    }
+
+    .skill-chip {
+      background: #EFF6FF;
+      color: #1E40AF;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .skill-chip .remove {
+      cursor: pointer;
+      font-size: 14px;
+      opacity: 0.6;
+    }
+
+    .skill-chip .remove:hover {
+      opacity: 1;
+    }
+
+    .csr-box {
+      background: linear-gradient(135deg, #FFFBEB, #FEF9C3);
+      border: 2px solid #FCD34D;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .csr-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+      font-size: 14px;
+    }
+
+    .csr-row:last-child {
+      border-bottom: none;
+    }
+
+    .csr-total {
+      font-size: 18px;
+      font-weight: 800;
+      color: #B45309;
+    }
+  </style>
+</head>
+
+<body class="theme-company">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><img src="../assets/tn-logo.png"></div><span>AccelerateAI</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">📊 Dashboard</a>
+        <a href="create-task.html" class="nav-item active">➕ Create Task</a>
+        <a href="candidates.html" class="nav-item">👥 Candidates</a>
+        <a href="csr-wallet.html" class="nav-item">💰 Wallet</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">C</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">Company</div>
+            <div class="user-role">Corporate</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-title">Create Evaluation Task</div>
+        <div class="topbar-actions">
+          <div class="wallet-badge">
+            <span>💼</span><span id="csrBal" style="font-weight:700;color:#B45309;">$2,45,000</span>
+          </div>
+          <a href="dashboard.html" class="btn btn-outline btn-sm">← Dashboard</a>
+        </div>
+      </div>
+
+      <div class="page-content page-fade">
+        <div style="display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start;">
+          <!-- FORM -->
+          <div class="card-flat">
+            <h3 style="font-size:20px;font-weight:800;margin-bottom:24px;">📋 Task Details</h3>
+
+            <div class="form-group">
+              <label class="form-label">Task Title *</label>
+              <input type="text" class="form-control" id="taskTitle" placeholder="e.g. Python Data Pipeline Developer"
+                oninput="updatePreview()">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Task Description *</label>
+              <textarea class="form-control" id="taskDesc" style="min-height:120px;"
+                placeholder="Describe what students need to do, objectives, expected deliverables..."
+                oninput="updatePreview()"></textarea>
+            </div>
+
+            <div class="grid-2" style="gap:16px;">
+              <div class="form-group">
+                <label class="form-label">Task Type</label>
+                <select class="form-control" id="taskType" onchange="updatePreview()">
+                  <option>Code</option>
+                  <option>Design</option>
+                  <option>Data Analysis</option>
+                  <option>Documentation</option>
+                  <option>Research</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Difficulty Level</label>
+                <select class="form-control" id="taskDiff" onchange="updatePreview()">
+                  <option>Easy</option>
+                  <option selected>Medium</option>
+                  <option>Hard</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="section-header" style="margin-top:24px;">
+              <div class="section-title" style="font-size:16px;">🎯 Applicant Eligibility Filter</div>
+            </div>
+            <div class="grid-3" style="gap:16px;">
+              <div class="form-group">
+                <label class="form-label">Experience Required</label>
+                <select class="form-control" id="reqExp">
+                  <option value="Freshers Only">Freshers Only</option>
+                  <option value="0-1 years" selected>0-1 years</option>
+                  <option value="1-2 years">1-2 years</option>
+                  <option value="0-2 years">0-2 years</option>
+                  <option value="Students Only">Undergrad Students Only</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Grad Year (From)</label>
+                <input type="number" class="form-control" id="gradStart" value="2022">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Grad Year (To)</label>
+                <input type="number" class="form-control" id="gradEnd" value="2026">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Required Skills</label>
+              <div class="skill-chip-input" id="skillChipContainer"
+                onclick="document.getElementById('skillInput').focus()">
+                <input type="text" id="skillInput" placeholder="Type skill and press Enter..."
+                  style="border:none;outline:none;font-size:13px;flex:1;min-width:120px;font-family:inherit;"
+                  onkeydown="handleSkillInput(event)">
+              </div>
+              <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;" id="suggestedSkills">
+                <!-- suggested skills -->
+              </div>
+            </div>
+
+            <div class="grid-2" style="gap:16px;">
+              <div class="form-group">
+                <label class="form-label">Max Participants (1-50)</label>
+                <input type="number" class="form-control" id="maxParticipants" min="1" max="50" value="20"
+                  oninput="updateCSRCalc()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Task Deadline</label>
+                <input type="date" class="form-control" id="taskDeadline">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Min. Selection Score Threshold (AI Score)</label>
+              <input type="number" class="form-control" id="scoreThreshold" min="0" max="100" value="70">
+              <div style="font-size:12px;color:#6B7280;margin-top:4px;">Students scoring above this will be prioritized
+                for hiring and reward eligibility.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Reward per Candidate: <span id="rewardDisplayLabel"
+                  style="color:#059669;font-weight:800;">$800</span></label>
+              <input type="range" min="200" max="1000" step="50" value="800" id="rewardSlider"
+                oninput="updateRewardLabel();updateCSRCalc();" style="width:100%;accent-color:#059669;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:#9CA3AF;margin-top:4px;">
+                <span>$200</span><span>$1,000</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+                Internship Stipend ($/month)
+                <span
+                  style="background:#DC2626;color:white;font-size:11px;padding:2px 8px;border-radius:20px;">MANDATORY</span>
+              </label>
+              <input type="number" class="form-control" id="stipendAmt" placeholder="e.g. 18000"
+                oninput="updatePreview()">
+              <div style="font-size:12px;color:#DC2626;margin-top:4px;">⚠️ Stipend must be disclosed upfront. Students
+                are entitled to see this before applying.</div>
+            </div>
+
+            <div class="grid-2" style="gap:16px;">
+              <div class="form-group">
+                <label class="form-label">Internship Duration (if hired)</label>
+                <select class="form-control" id="internDuration">
+                  <option>1 month</option>
+                  <option>2 months</option>
+                  <option selected>3 months</option>
+                  <option>6 months</option>
+                  <option>1 year</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Work Mode</label>
+                <select class="form-control" id="workMode">
+                  <option>Remote</option>
+                  <option>On-site</option>
+                  <option>Hybrid</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn btn-primary"
+              style="width:100%;justify-content:center;padding:16px;font-size:16px;margin-top:8px;"
+              onclick="createTask()">
+              🚀 Create Task & Lock CSR Funds
+            </button>
+          </div>
+
+          <!-- PREVIEW + CSR CALC -->
+          <div>
+            <div class="preview-card" style="margin-bottom:20px;">
+              <div class="preview-title">👁️ Student Preview</div>
+              <div id="taskPreview">
+                <div style="text-align:center;color:#9CA3AF;font-size:13px;padding:20px;">Fill the form to see live
+                  preview</div>
+              </div>
+            </div>
+
+            <div class="csr-box">
+              <div style="font-size:15px;font-weight:800;margin-bottom:16px;">💰 CSR Calculation</div>
+              <div class="csr-row"><span>Reward per candidate</span><span id="calc-reward"
+                  style="font-weight:700;">$800</span></div>
+              <div class="csr-row"><span>Max participants</span><span id="calc-slots" style="font-weight:700;">20</span>
+              </div>
+              <div class="csr-row"><span>Platform fee (0%)</span><span
+                  style="color:#059669;font-weight:700;">Free</span></div>
+              <div class="csr-row" style="margin-top:8px;border-top:2px solid #FCD34D;padding-top:8px;">
+                <span style="font-weight:700;">Total CSR Required</span>
+                <span class="csr-total" id="calc-total">$16,000</span>
+              </div>
+              <div class="csr-row">
+                <span>Your Balance</span>
+                <span id="calc-balance" style="font-weight:700;color:#059669;">$2,45,000</span>
+              </div>
+              <div style="margin-top:12px;padding:12px;border-radius:8px;" id="balanceStatus">
+                <!-- filled by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    const suggestedSkillsList = ['Python', 'JavaScript', 'React', 'Node.js', 'SQL', 'Machine Learning', 'Figma', 'AWS', 'Docker', 'MongoDB', 'Java', 'C++', 'Flutter', 'TensorFlow'];
+    let selectedSkills = [];
+    let csrBalance = 0;
+
+    async function init() {
+      const user = getUser();
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      try {
+        const profile = await apiCall('/company/profile');
+        const company = profile.profile || {};
+        csrBalance = company.csr_balance || 0;
+
+        document.getElementById('userName').textContent = company.name || user.name || 'Company';
+        document.getElementById('csrBal').textContent = formatCurrency(csrBalance);
+        document.getElementById('calc-balance').textContent = formatCurrency(csrBalance);
+
+        // Set default deadline
+        const d = new Date(); d.setDate(d.getDate() + 14);
+        document.getElementById('taskDeadline').value = d.toISOString().split('T')[0];
+        document.getElementById('taskDeadline').min = new Date().toISOString().split('T')[0];
+
+        renderSuggestedSkills();
+        updateCSRCalc();
+      } catch (err) {
+        showToast('Error loading profile: ' + err.message, 'error');
+      }
+    }
+
+    function renderSuggestedSkills() {
+      document.getElementById('suggestedSkills').innerHTML = suggestedSkillsList.map(s => `
+        <span style="padding:4px 10px;border-radius:20px;font-size:12px;border:1.5px solid #E5E7EB;cursor:pointer;font-weight:500;transition:all 0.2s;" 
+          onclick="addSkill('${s}')" onmouseover="this.style.borderColor='#1E40AF';this.style.color='#1E40AF'" onmouseout="this.style.borderColor='#E5E7EB';this.style.color=''">${s}</span>
+      `).join('');
+    }
+
+    function handleSkillInput(e) {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const val = e.target.value.trim();
+        if (val) addSkill(val);
+        e.target.value = '';
+      }
+    }
+
+    function addSkill(skill) {
+      if (selectedSkills.includes(skill)) return;
+      selectedSkills.push(skill);
+      renderSkillChips();
+      updatePreview();
+    }
+
+    function removeSkill(skill) {
+      selectedSkills = selectedSkills.filter(s => s !== skill);
+      renderSkillChips();
+      updatePreview();
+    }
+
+    function renderSkillChips() {
+      const container = document.getElementById('skillChipContainer');
+      const input = document.getElementById('skillInput');
+      container.innerHTML = '';
+      selectedSkills.forEach(s => {
+        const chip = document.createElement('div');
+        chip.className = 'skill-chip';
+        chip.innerHTML = `${s}<span class="remove" onclick="removeSkill('${s}')">✕</span>`;
+        container.appendChild(chip);
+      });
+      container.appendChild(input);
+    }
+
+    function updateRewardLabel() {
+      const v = document.getElementById('rewardSlider').value;
+      document.getElementById('rewardDisplayLabel').textContent = '$' + v;
+    }
+
+    function updateCSRCalc() {
+      const reward = parseInt(document.getElementById('rewardSlider').value) || 800;
+      const slots = parseInt(document.getElementById('maxParticipants').value) || 20;
+      const total = reward * slots;
+
+      document.getElementById('calc-reward').textContent = '$' + reward.toLocaleString('en-US');
+      document.getElementById('calc-slots').textContent = slots;
+      document.getElementById('calc-total').textContent = '$' + total.toLocaleString('en-US');
+
+      const statusEl = document.getElementById('balanceStatus');
+      if (total <= csrBalance) {
+        statusEl.style.background = '#ECFDF5';
+        statusEl.innerHTML = '<span style="color:#059669;font-weight:700;">✅ Sufficient Balance — Funds will be locked in escrow</span>';
+      } else {
+        statusEl.style.background = '#FEF2F2';
+        statusEl.innerHTML = `<span style="color:#DC2626;font-weight:700;">❌ Insufficient Balance — Need $${(total - csrBalance).toLocaleString('en-US')} more</span><br><a href="csr-wallet.html" class="btn btn-red btn-sm" style="margin-top:8px;">Deposit CSR Funds</a>`;
+      }
+
+      updatePreview();
+    }
+
+    function updatePreview() {
+      const title = document.getElementById('taskTitle').value || 'Task Title';
+      const diff = document.getElementById('taskDiff').value;
+      const reward = document.getElementById('rewardSlider').value;
+      const stipend = document.getElementById('stipendAmt').value;
+      const deadline = document.getElementById('taskDeadline').value;
+
+      document.getElementById('taskPreview').innerHTML = `
+        <div style="border:1px solid #E5E7EB;border-radius:10px;padding:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+            <div style="font-size:13px;font-weight:600;color:#6B7280;">Preview</div>
+            <span class="badge badge-gold">⭐ CSR</span>
+          </div>
+          <div style="font-size:16px;font-weight:800;margin-bottom:10px;">${title}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;">${selectedSkills.slice(0, 4).map(s => `<span class="tag">${s}</span>`).join('')}${selectedSkills.length > 4 ? `<span class="tag">+${selectedSkills.length - 4}</span>` : ''}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid #E5E7EB;">
+            <div>
+              <div style="font-size:18px;font-weight:800;color:#059669;">$${parseInt(reward).toLocaleString('en-US')}</div>
+              ${stipend ? `<div style="font-size:12px;color:#6B7280;">Stipend: $${parseInt(stipend).toLocaleString('en-US')}/mo</div>` : '<div style="font-size:12px;color:#DC2626;">⚠ Add stipend</div>'}
+            </div>
+            <div style="text-align:right;">
+              ${difficultyBadge(diff)}
+              ${deadline ? `<div style="font-size:11px;color:#6B7280;margin-top:4px;">${daysLeft(deadline)}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function createTask() {
+      const title = document.getElementById('taskTitle').value.trim();
+      const desc = document.getElementById('taskDesc').value.trim();
+      const stipend = parseInt(document.getElementById('stipendAmt').value);
+      const reward = parseInt(document.getElementById('rewardSlider').value);
+      const slots = parseInt(document.getElementById('maxParticipants').value);
+      const deadline = document.getElementById('taskDeadline').value;
+
+      const threshold = parseInt(document.getElementById('scoreThreshold').value);
+
+      if (!title) { showToast('Task title is required', 'warning'); return; }
+      if (!desc) { showToast('Task description is required', 'warning'); return; }
+      if (!stipend) { showToast('Internship stipend is mandatory', 'error'); return; }
+      if (selectedSkills.length === 0) { showToast('Please add at least one required skill', 'warning'); return; }
+
+      const total = reward * slots;
+      if (total > csrBalance) {
+        showToast('Insufficient Reward pools.', 'error'); return;
+      }
+
+      try {
+        showLoader('Creating task & locking Reward pools...');
+        const params = new URLSearchParams({
+          title: title,
+          description: desc,
+          reward: reward,
+          internship_stipend: stipend,
+          max_participants: slots,
+          deadline: deadline,
+          min_score_threshold: threshold,
+          required_experience: document.getElementById('reqExp').value,
+          grad_year_start: document.getElementById('gradStart').value,
+          grad_year_end: document.getElementById('gradEnd').value
+        });
+
+        const res = await apiCall(`/company/create-task?${params.toString()}`, 'POST');
+
+        hideLoader();
+        showToast(res.message || 'Task created successfully!', 'success');
+        setTimeout(() => window.location.href = 'dashboard.html', 2000);
+      } catch (err) {
+        hideLoader();
+        showToast('Task creation failed: ' + err.message, 'error');
+      }
+    }
+
+    init();
+  </script>
+
+
+</body>
+
+</html>

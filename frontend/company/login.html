@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Login - AccelerateAI</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1F2937 0%, var(--primary) 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-wrap {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 20px;
+      padding: 44px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo .icon {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .login-logo h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1F2937;
+    }
+
+    .login-logo p {
+      font-size: 14px;
+      color: #6B7280;
+      margin-top: 4px;
+    }
+
+    .creds-hint {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #1E40AF;
+    }
+
+    .creds-hint strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .tab-selector {
+      display: flex;
+      background: #F3F4F6;
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .tab-btn.active {
+      background: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      color: var(--primary);
+    }
+  </style>
+</head>
+
+<body class="theme-company">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="../assets/tn-logo.png" style="height: 60px; margin-bottom: 16px;">
+        <h1>Company Portal</h1>
+        <p>AccelerateAI — AI-Powered Hiring</p>
+      </div>
+
+      <div class="tab-selector">
+        <button class="tab-btn active" onclick="switchTab('login',this)">🔑 Login</button>
+        <button class="tab-btn" onclick="switchTab('register',this)">📝 Register</button>
+      </div>
+
+      <!-- LOGIN TAB -->
+      <div id="loginTab">
+        <div class="form-group">
+          <label class="form-label">Company Email</label>
+          <input type="email" id="email" class="form-control" placeholder="company@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;"
+          onclick="doLogin()">
+          Login to Company Portal →
+        </button>
+        <div class="creds-hint">
+          <strong>🧪 Test Credentials</strong>
+          techcorp@company.com / company123<br>
+          startup@company.com / company123
+        </div>
+      </div>
+
+      <!-- REGISTER TAB -->
+      <div id="registerTab" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Company Name</label>
+          <input type="text" id="regName" class="form-control" placeholder="Your Company Name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Email</label>
+          <input type="email" id="regEmail" class="form-control" placeholder="hr@company.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Industry Domain</label>
+          <select id="regDomain" class="form-control">
+            <option>Software & IT</option>
+            <option>Manufacturing</option>
+            <option>Finance</option>
+            <option>Healthcare</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Type</label>
+          <select id="regType" class="form-control">
+            <option value="Corporate">Corporate (>500 employees)</option>
+            <option value="Mid-size">Mid-size (50-500 employees)</option>
+            <option value="Startup">Startup (<50 employees)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Logo URL</label>
+          <input type="text" id="regLogo" class="form-control" placeholder="https://logo-url.png">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="regPass" class="form-control" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;"
+          onclick="doRegister()">
+          Register Company →
+        </button>
+      </div>
+
+      <div style="text-align:center;margin-top:20px;font-size:14px;color:#6B7280;"><a href="../index.html"
+          style="color:#1E40AF;font-weight:600;">← Back to Home</a></div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('loginTab').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('registerTab').style.display = tab === 'register' ? 'block' : 'none';
+    }
+
+    function doLogin() {
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('password').value;
+      if (!email || !pass) { showToast('Please enter credentials', 'warning'); return; }
+      handleLogin(email, pass, 'company');
+    }
+
+    async function doRegister() {
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const type = document.getElementById('regType').value;
+      const domain = document.getElementById('regDomain').value;
+      const pass = document.getElementById('regPass').value;
+      const logo = document.getElementById('regLogo').value.trim();
+
+      if (!name || !email || !pass) { showToast('Please fill all required fields', 'warning'); return; }
+
+      try {
+        showLoader('Registering company...');
+        const res = await apiCall('/auth/register/company', 'POST', {
+          company_name: name,
+          email,
+          password: pass,
+          company_type: type,
+          industry_domain: domain,
+          logo_url: logo
+        });
+        hideLoader();
+        showToast('Registration successful! Please login.', 'success');
+        switchTab('login', document.querySelector('.tab-btn:nth-child(1)'));
+      } catch (err) {
+        hideLoader();
+        showToast('Registration failed: ' + err.message, 'error');
+      }
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  </script>
+</body>
+
+</html>
